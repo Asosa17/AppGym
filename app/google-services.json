@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "413690088545",
+    "project_id": "cajonauth",
+    "storage_bucket": "cajonauth.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:413690088545:android:9654a1529f7e94684b2e20",
+        "android_client_info": {
+          "package_name": "net.azarquiel.cajonauth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYiKRfQeEq5saYtCM9bZxoO7CNUznEFuQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:413690088545:android:ccb0522144b703b54b2e20",
+        "android_client_info": {
+          "package_name": "net.azarquiel.appgym"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYiKRfQeEq5saYtCM9bZxoO7CNUznEFuQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

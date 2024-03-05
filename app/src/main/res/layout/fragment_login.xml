@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/framelogin"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/fondorojo"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.LoginFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.LoginFragment">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="214dp"
+            android:text="Iniciar Sesión"
+            android:textColor="#000000"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/dividerLine"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginStart="80dp"
+            android:layout_marginEnd="80dp"
+            android:background="#000000"
+            android:backgroundTint="#000000"
+            android:foregroundTint="#000000"
+            app:layout_constraintBottom_toTopOf="@+id/etemail"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+        <EditText
+            android:id="@+id/etemail"
+            android:layout_width="248dp"
+            android:layout_height="57dp"
+            android:background="@drawable/edit_text_border"
+            android:ems="10"
+            android:hint="email@example.com"
+            android:inputType="textEmailAddress"
+            android:padding="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.509"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.455" />
+
+        <EditText
+            android:id="@+id/etpass"
+            android:layout_width="245dp"
+            android:layout_height="55dp"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/edit_text_border"
+            android:ems="10"
+            android:hint="contraseña 6 caracteres minimo"
+            android:inputType="textPassword"
+            android:padding="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etemail"
+            app:layout_constraintVertical_bias="0.011" />
+
+        <View
+            android:id="@+id/dividerLine2"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginStart="80dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="80dp"
+            android:background="#000000"
+
+            android:backgroundTint="#000000"
+            android:foregroundTint="#000000"
+            app:layout_constraintBottom_toTopOf="@+id/btnregs"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etpass" />
+
+
+        <Button
+            android:id="@+id/btnregs"
+            android:layout_width="216dp"
+            android:layout_height="65dp"
+            android:layout_marginBottom="144dp"
+            android:backgroundTint="#353535"
+            android:text="Registrarse"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btnaceptar"
+            android:layout_width="200dp"
+            android:layout_height="51dp"
+            android:layout_marginBottom="32dp"
+            android:backgroundTint="#cb1228"
+            android:text="Aceptar"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>
