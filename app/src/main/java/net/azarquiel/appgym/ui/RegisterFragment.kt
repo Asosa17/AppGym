@@ -1,6 +1,8 @@
 package net.azarquiel.appgym.ui
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -30,6 +32,9 @@ class RegisterFragment : Fragment() {
     private lateinit var etpassrg: EditText
     private lateinit var etemailrg: EditText
     private lateinit var db: FirebaseFirestore
+    private lateinit var datosUserSH: SharedPreferences
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,6 +48,7 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         auth = Firebase.auth
         db = Firebase.firestore
+        datosUserSH = requireActivity().getSharedPreferences("datosUserSh", Context.MODE_PRIVATE)
         etnombreuserrg= root.findViewById<EditText>(R.id.etnombreuserrg)
         etemailrg= root.findViewById<EditText>(R.id.etemailrg)
         etpassrg= root.findViewById<EditText>(R.id.etpassrg)
@@ -88,7 +94,6 @@ class RegisterFragment : Fragment() {
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 userlocal = task.result?.user
-
                                 val intent = Intent(requireContext(), PrincipalActivity::class.java)
                                 intent.putExtra("userlocal", userlocal)
                                 startActivity(intent)
@@ -110,6 +115,7 @@ class RegisterFragment : Fragment() {
                                 msg("Error ${task.exception?.message}")
                             }
                         }
+                        meterDatosUser(etnombreuserrg.text.toString(),etemailrg.text.toString())
                 }
             }
             .addOnFailureListener { e ->
@@ -125,5 +131,11 @@ class RegisterFragment : Fragment() {
     }
     private fun msg(msg: String) {
         Toast.makeText(requireActivity(),msg, Toast.LENGTH_LONG).show()
+    }
+    private fun meterDatosUser(username:String,email:String) {
+        var editor = datosUserSH.edit()
+        editor.putString("username", username)
+        editor.putString("email", email)
+        editor.commit()
     }
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PruebaLoginRegistro</string>
+    <string name="app_name">AppGym</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -10,6 +10,7 @@
     <string name="title_rutinas">Rutinas</string>
     <string name="title_chat">Chat</string>
     <string name="title_dietas">Dietas</string>
+    <string name="title_ajustes">Ajustes</string>
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris

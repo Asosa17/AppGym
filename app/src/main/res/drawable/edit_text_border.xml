@@ -3,13 +3,9 @@
     android:shape="rectangle">
 
     <!-- Fondo blanco para el EditText -->
+    <solid android:color="#8F8E8E"/>
 
-
-    <!-- Borde negro con 2dp de ancho -->
-    <stroke
-        android:width="2dp"
-        android:color="#000000" />
 
     <!-- Esquinas redondeadas, ajusta según tu preferencia -->
-    <corners android:radius="8dp" />
+    <corners android:radius="10dp" />
 </shape>

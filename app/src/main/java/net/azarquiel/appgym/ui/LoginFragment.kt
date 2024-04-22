@@ -1,6 +1,8 @@
 package net.azarquiel.appgym.ui
 
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -22,11 +24,12 @@ class LoginFragment : Fragment() {
     private lateinit var root: View
     private lateinit var btnregistro: Button
     private lateinit var btnaceptar: Button
-    private var userlocal: FirebaseUser? = null
+    private var userFB: FirebaseUser? = null
     private lateinit var auth: FirebaseAuth;
     private lateinit var etpass: EditText
     private lateinit var etemail: EditText
     private lateinit var db: FirebaseFirestore
+    private lateinit var datosUserSH: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,13 +44,15 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         auth = Firebase.auth
         db = Firebase.firestore
+        datosUserSH = requireActivity().getSharedPreferences("datosUserSh", MODE_PRIVATE)
+
         etemail= root.findViewById<EditText>(R.id.etemail)
         etpass= root.findViewById<EditText>(R.id.etpass)
         btnregistro=root.findViewById<Button>(R.id.btnregs)
         btnregistro.setOnClickListener {
             replaceFragment(RegisterFragment())
         }
-        btnaceptar=root.findViewById<Button>(R.id.btnaceptar)
+        btnaceptar=root.findViewById<Button>(R.id.btnIniSesion)
         btnaceptar.setOnClickListener {
             login()
 
@@ -64,12 +69,16 @@ class LoginFragment : Fragment() {
         db.collection("users").document(email).get()
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
+                    val usernameSH = documentSnapshot.getString("username")
+                    val emailSH = documentSnapshot.getString("email")
+                    val imgUrlSH = documentSnapshot.getString("imageUrl")
+                    meterDatosUser(usernameSH!!,emailSH!!,imgUrlSH!!)
                     auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener { signInTask ->
                             if (signInTask.isSuccessful) {
-                                userlocal = auth.currentUser
+                                userFB = auth.currentUser
                                 val intent = Intent(requireContext(), PrincipalActivity::class.java)
-                                intent.putExtra("userlocal", userlocal)
+                                intent.putExtra("userFB", userFB)
                                 startActivity(intent)
                                 requireActivity().finish()
                                 etemail.setText("")
@@ -91,6 +100,13 @@ class LoginFragment : Fragment() {
         val fragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frame, fragment)
         fragmentTransaction.commit()
+    }
+    private fun meterDatosUser(username:String,email:String,imageUrl:String) {
+        var editor = datosUserSH.edit()
+        editor.putString("username", username)
+        editor.putString("email", email)
+        editor.putString("imageUrl", imageUrl)
+        editor.commit()
     }
 
 }

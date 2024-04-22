@@ -1,24 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    >
 
     <item
         android:id="@+id/navigation_home"
-        android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/title_home" />
+        android:icon="@drawable/casa"
+        android:title="@string/title_home"
+
+        />
 
     <item
         android:id="@+id/navigation_rutinas"
-        android:icon="@drawable/navigation_rutinas"
+        android:icon="@drawable/rutinas"
         android:title="@string/title_rutinas" />
 
     <item
         android:id="@+id/navigation_chat"
-        android:icon="@drawable/navigation_chat"
+        android:icon="@drawable/chat"
         android:title="@string/title_chat" />
     <item
 
         android:id="@+id/navigation_dietas"
-        android:icon="@drawable/navigation_dietas"
+        android:icon="@drawable/dietas"
         android:title="@string/title_dietas"/>
+    <item
+
+        android:id="@+id/navigation_ajustes"
+        android:icon="@drawable/configuraciones"
+        android:title="@string/title_ajustes"
+        />
 
 </menu>

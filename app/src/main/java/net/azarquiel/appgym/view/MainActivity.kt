@@ -1,5 +1,6 @@
 package net.azarquiel.appgym.view
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.ui.AppBarConfiguration
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -34,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     }
     private fun setInitialFragment() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
+
         if (userlocal==null){
             fragment = LoginFragment()
         }else{

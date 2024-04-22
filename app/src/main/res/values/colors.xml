@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="navViewRojo">#CB1228</color>
+    <color name="navViewAzul">#1219CB</color>
+    <color name="navViewVerde">#12CB72</color>
+
 </resources>

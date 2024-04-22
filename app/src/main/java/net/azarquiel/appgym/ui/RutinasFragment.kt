@@ -1,15 +1,15 @@
-package com.example.pruebamenu.ui.notifications
+package net.azarquiel.appgym.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import net.azarquiel.appgym.databinding.FragmentNotificationsBinding
+import net.azarquiel.appgym.databinding.FragmentRutinasBinding
 
-class NotificationsFragment : Fragment() {
+class RutinasFragment : Fragment() {
 
-    private var _binding: FragmentNotificationsBinding? = null
+    private var _binding: FragmentRutinasBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -22,7 +22,7 @@ class NotificationsFragment : Fragment() {
     ): View {
 
 
-        _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
+        _binding = FragmentRutinasBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
 

@@ -1,5 +1,6 @@
-package com.example.pruebamenu.ui.home
+package net.azarquiel.appgym.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import net.azarquiel.appgym.R
 import net.azarquiel.appgym.databinding.FragmentHomeBinding
+import net.azarquiel.appgym.view.MainActivity
 
 class HomeFragment : Fragment() {
 
@@ -40,6 +42,10 @@ class HomeFragment : Fragment() {
         var btnlogout=root.findViewById<Button>(R.id.btnlogout)
         btnlogout.setOnClickListener {
             logOut()
+            val intent=Intent(requireContext(),MainActivity::class.java)
+            startActivity(intent)
+
+            requireActivity().finish()
         }
 
     }
