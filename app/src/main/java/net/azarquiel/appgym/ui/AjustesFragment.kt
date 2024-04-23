@@ -1,6 +1,8 @@
 package net.azarquiel.appgym.ui
 
 import android.Manifest
+import android.animation.ValueAnimator
+import android.transition.TransitionManager
 import android.app.Activity
 import android.app.Dialog
 import android.content.ContentValues
@@ -18,6 +20,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.transition.Fade
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -25,11 +28,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -39,8 +44,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-//import com.squareup.picasso.Picasso
+import com.squareup.picasso.Picasso
 import net.azarquiel.appgym.R
+import net.azarquiel.appgym.databinding.FragmentAjustesBinding
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -51,7 +57,9 @@ import java.util.Locale
 
 class AjustesFragment : Fragment() {
 
-
+    private lateinit var datos: ConstraintLayout
+    private lateinit var flecha: ImageView
+    private lateinit var binding: FragmentAjustesBinding
     private lateinit var imageUrl: String
     private lateinit var dialog: Dialog
     private var userlocal: FirebaseUser?=null
@@ -64,13 +72,19 @@ class AjustesFragment : Fragment() {
     private lateinit var btnGalery: Button
     private val CAMERA_PERMISSION_REQUEST_CODE = 100
     private lateinit var datosUserSH: SharedPreferences
+    private var isExpanded = false
+    private var isExpanded1 = false
+    private var isExpanded2 = false
+    private var isExpanded3 = false
+    private var isExpanded4 = false
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        root = inflater.inflate(R.layout.fragment_ajustes, container, false)
+        binding = FragmentAjustesBinding.inflate(inflater, container, false)
+        val root = binding.root
         return root
     }
 
@@ -80,23 +94,134 @@ class AjustesFragment : Fragment() {
         db = FirebaseFirestore.getInstance()
         datosUserSH = requireActivity().getSharedPreferences("datosUserSh", MODE_PRIVATE)
         getUser()
-//        IvUserAvatar = root.findViewById<ImageView>(R.id.IvUserAvatar)
-//        val imageUrl = datosUserSH.getString("imageUrl", null)
-//        if (!imageUrl.isNullOrEmpty()) {
-//            Picasso.get().load(imageUrl).into(IvUserAvatar)
-//        }
-//        IvUserAvatar.setOnClickListener {
-//            if (userlocal != null) {
-//                openDialog()
-//            } else {
-//                msg("Inicia sesión o regístrate")
-//            }
-//        }
-//
-//
-//        onResultImage()
+        val imageUrl = datosUserSH.getString("imageUrl", null)
+        val username = datosUserSH.getString("username",null)
+        if (!imageUrl.isNullOrEmpty()) {
+            Picasso.get().load(imageUrl).into(binding.IvUserAvatar)
+        }
+        if (!username.isNullOrEmpty()) {
+            binding.tvNombreUsuarioAjustes.setText(username)
+        }
+        binding.IvUserAvatar.setOnClickListener {
+            if (userlocal != null) {
+                openDialog()
+            } else {
+                msg("Inicia sesión o regístrate")
+            }
+        }
+
+        binding.datos1aj.setOnClickListener {
+            expandir(1)
+            isExpanded1 = !isExpanded1
+        }
+
+        binding.datos2aj.setOnClickListener {
+            expandir(2)
+            isExpanded2 = !isExpanded2
+        }
+
+        binding.datos3aj.setOnClickListener {
+            expandir(3)
+            isExpanded3 = !isExpanded3
+        }
+
+        binding.datos4aj.setOnClickListener {
+            expandir(4)
+            isExpanded4 = !isExpanded4
+        }
+
+        onResultImage()
     }
 
+
+
+    private fun expandir(id:Int) {
+        cerrar2(id)
+        when(id){
+            1->{
+                datos=binding.datos1aj
+                flecha=binding.flechaDes1
+                isExpanded=isExpanded1
+            }
+            2->{
+                datos=binding.datos2aj
+                flecha=binding.flechaDes2
+                isExpanded=isExpanded2
+            }
+            3->{
+                datos=binding.datos3aj
+                flecha=binding.flechaDes3
+                isExpanded=isExpanded3
+            }
+            4->{
+                datos=binding.datos4aj
+                flecha=binding.flechaDes4
+                isExpanded=isExpanded4
+            }
+        }
+        // Variable para mantener el estado actual de la animación
+        val layoutParams = datos.layoutParams as ConstraintLayout.LayoutParams
+
+        // Calcular la altura final deseada
+        val startHeight = datos.height
+        val endHeight = if (isExpanded) 200 else 500 // Altura final deseada en píxeles
+        val duration = 1000L // Duración de la animación en milisegundos
+
+        // Crear un ValueAnimator para cambiar la altura del ConstraintLayout
+        val animator = ValueAnimator.ofInt(startHeight, endHeight)
+        animator.duration = duration
+
+        // Cambiar la rotación de la flecha
+        val rotation = if (isExpanded) -90f else 0f // Rotación deseada de la flecha
+        flecha.animate().rotation(rotation).start()
+
+        // Actualizar la altura del ConstraintLayout durante la animación
+        animator.addUpdateListener { animation ->
+            val animatedValue = animation.animatedValue as Int
+            layoutParams.height = animatedValue
+            datos.layoutParams = layoutParams
+
+        }
+        // Iniciar la animación
+        animator.start()
+        Log.d("expandir"," "+isExpanded)
+    }
+
+    private fun cerrar2(id: Int) {
+        val expandirIds = arrayOf(1, 2, 3, 4) // IDs de los elementos a expandir
+
+        for (expandirId in expandirIds) {
+            if (expandirId != id) {
+                // Si el ID actual no es igual al ID del elemento que se va a expandir, cerrar el elemento
+                val isExpanded = when (expandirId) {
+                    1 -> isExpanded1
+                    2 -> isExpanded2
+                    3 -> isExpanded3
+                    4 -> isExpanded4
+                    else -> false
+                }
+
+                if (isExpanded) {
+                    cerrar(expandirId)
+                    when (expandirId) {
+                        1 -> isExpanded1 = false
+                        2 -> isExpanded2 = false
+                        3 -> isExpanded3 = false
+                        4 -> isExpanded4 = false
+                    }
+                }
+            }
+        }
+    }
+    private fun cerrar(id: Int) {
+        // Cerrar el elemento correspondiente
+        when (id) {
+            1 -> expandir(1)
+            2 -> expandir(2)
+            3 -> expandir(3)
+            4 -> expandir(4)
+        }
+    }
     private fun openDialog() {
         val builder = AlertDialog.Builder(requireContext())
         val inflater = layoutInflater
@@ -202,7 +327,7 @@ class AjustesFragment : Fragment() {
             if (result.resultCode == AppCompatActivity.RESULT_OK) {
                 result.data?.let { intent ->
                     intent.data?.let { uri ->
-                        IvUserAvatar.setImageURI(uri)
+                        binding.IvUserAvatar.setImageURI(uri)
                         uploadImage(uri)
                         (dialog as AlertDialog).dismiss()
                     }
@@ -213,7 +338,7 @@ class AjustesFragment : Fragment() {
                 // Obtener la imagen capturada como bitmap
                 val imageBitmap = result.data?.extras?.get("data") as Bitmap
                 // Establecer la imagen capturada en el ImageView
-                IvUserAvatar.setImageBitmap(imageBitmap)
+                binding.IvUserAvatar.setImageBitmap(imageBitmap)
                 // Obtener la URI de la imagen capturada
                 val tempUri = getImageUri(requireContext(), imageBitmap)
                 // Subir la imagen a Firebase
