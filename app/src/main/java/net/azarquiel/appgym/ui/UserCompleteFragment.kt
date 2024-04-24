@@ -87,7 +87,6 @@ class UserCompleteFragment : Fragment() {
     private fun Entrarapp() {
         val intent = Intent(requireContext(), PrincipalActivity::class.java)
         intent.putExtra("userlocal", userFB)
-        intent.putExtra("imageUrl", imageUrl)
         startActivity(intent)
         requireActivity().finish()
     }

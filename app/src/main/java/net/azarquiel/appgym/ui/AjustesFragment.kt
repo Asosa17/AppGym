@@ -1,6 +1,7 @@
 package net.azarquiel.appgym.ui
 
 import android.Manifest
+import android.animation.Animator
 import android.animation.ValueAnimator
 import android.transition.TransitionManager
 import android.app.Activity
@@ -21,6 +22,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.transition.Fade
+import android.transition.Visibility
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -38,6 +40,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
@@ -45,6 +48,11 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.azarquiel.appgym.R
 import net.azarquiel.appgym.databinding.FragmentAjustesBinding
 import java.io.ByteArrayOutputStream
@@ -56,8 +64,9 @@ import java.util.Date
 import java.util.Locale
 
 class AjustesFragment : Fragment() {
-
+    private var visibility: Int = View.GONE
     private lateinit var datos: ConstraintLayout
+    private lateinit var clajustes: ConstraintLayout
     private lateinit var flecha: ImageView
     private lateinit var binding: FragmentAjustesBinding
     private lateinit var imageUrl: String
@@ -111,23 +120,28 @@ class AjustesFragment : Fragment() {
         }
 
         binding.datos1aj.setOnClickListener {
-            expandir(1)
+            visibility=binding.cl1ajustes.visibility
+            expandir(1,visibility)
             isExpanded1 = !isExpanded1
         }
 
         binding.datos2aj.setOnClickListener {
-            expandir(2)
+            visibility=binding.clajustes2.visibility
+            expandir(2,visibility)
             isExpanded2 = !isExpanded2
         }
 
         binding.datos3aj.setOnClickListener {
-            expandir(3)
+            visibility=binding.clajsutes3.visibility
+            expandir(3,visibility)
             isExpanded3 = !isExpanded3
         }
 
         binding.datos4aj.setOnClickListener {
-            expandir(4)
+            visibility=binding.clajsutes4.visibility
+            expandir(4,visibility)
             isExpanded4 = !isExpanded4
+
         }
 
         onResultImage()
@@ -135,44 +149,57 @@ class AjustesFragment : Fragment() {
 
 
 
-    private fun expandir(id:Int) {
+    private fun expandir(id:Int, visibility: Int) {
+        val newVisibility = if (visibility == View.VISIBLE) {
+            View.GONE // Si está visible, lo hacemos invisible
+        } else {
+            View.VISIBLE // Si no está visible, lo hacemos visible
+        }
         cerrar2(id)
         when(id){
             1->{
                 datos=binding.datos1aj
                 flecha=binding.flechaDes1
                 isExpanded=isExpanded1
+                clajustes=binding.cl1ajustes
             }
             2->{
                 datos=binding.datos2aj
                 flecha=binding.flechaDes2
                 isExpanded=isExpanded2
+                clajustes=binding.clajustes2
             }
             3->{
                 datos=binding.datos3aj
                 flecha=binding.flechaDes3
                 isExpanded=isExpanded3
+                clajustes=binding.clajsutes3
             }
             4->{
                 datos=binding.datos4aj
                 flecha=binding.flechaDes4
                 isExpanded=isExpanded4
+                clajustes=binding.clajsutes4
             }
         }
+
         // Variable para mantener el estado actual de la animación
         val layoutParams = datos.layoutParams as ConstraintLayout.LayoutParams
+        //Cambiar visibilidad del contenido al cerrar o abrir
+        cambiarVisibilidadConRetraso(clajustes, newVisibility)
 
-        // Calcular la altura final deseada
+        // Altura inicial y final
         val startHeight = datos.height
-        val endHeight = if (isExpanded) 200 else 500 // Altura final deseada en píxeles
-        val duration = 1000L // Duración de la animación en milisegundos
+        val endHeight = if (isExpanded) 193 else startHeight+250
+
+        val duration = 800L // Duración de la animación en milisegundos
 
         // Crear un ValueAnimator para cambiar la altura del ConstraintLayout
         val animator = ValueAnimator.ofInt(startHeight, endHeight)
         animator.duration = duration
 
         // Cambiar la rotación de la flecha
-        val rotation = if (isExpanded) -90f else 0f // Rotación deseada de la flecha
+        val rotation = if (isExpanded) -90f else 0f
         flecha.animate().rotation(rotation).start()
 
         // Actualizar la altura del ConstraintLayout durante la animación
@@ -180,11 +207,21 @@ class AjustesFragment : Fragment() {
             val animatedValue = animation.animatedValue as Int
             layoutParams.height = animatedValue
             datos.layoutParams = layoutParams
-
         }
         // Iniciar la animación
         animator.start()
         Log.d("expandir"," "+isExpanded)
+    }
+
+    private fun cambiarVisibilidadConRetraso(view: View, newVisibility: Int) {
+        var delay2=if (isExpanded)200L else 600L
+        GlobalScope.launch {
+            delay(delay2) // Retrasar la ejecución durante la duración de la animación
+            withContext(Dispatchers.Main) {
+                // Cambiar la visibilidad en el hilo principal después del retraso
+                view.visibility = newVisibility
+            }
+        }
     }
 
     private fun cerrar2(id: Int) {
@@ -216,10 +253,10 @@ class AjustesFragment : Fragment() {
     private fun cerrar(id: Int) {
         // Cerrar el elemento correspondiente
         when (id) {
-            1 -> expandir(1)
-            2 -> expandir(2)
-            3 -> expandir(3)
-            4 -> expandir(4)
+            1 -> expandir(1, binding.cl1ajustes.visibility)
+            2 -> expandir(2, binding.clajustes2.visibility)
+            3 -> expandir(3, binding.clajsutes3.visibility)
+            4 -> expandir(4, binding.clajsutes4.visibility)
         }
     }
     private fun openDialog() {
