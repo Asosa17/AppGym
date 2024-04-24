@@ -44,7 +44,7 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         auth = Firebase.auth
         db = Firebase.firestore
-        datosUserSH = requireActivity().getSharedPreferences("datosUserSh", MODE_PRIVATE)
+
 
         etemail= root.findViewById<EditText>(R.id.etemail)
         etpass= root.findViewById<EditText>(R.id.etpass)
@@ -72,7 +72,12 @@ class LoginFragment : Fragment() {
                     val usernameSH = documentSnapshot.getString("username")
                     val emailSH = documentSnapshot.getString("email")
                     val imgUrlSH = documentSnapshot.getString("imageUrl")
-                    meterDatosUser(usernameSH!!,emailSH!!,imgUrlSH!!)
+                    if (::datosUserSH.isInitialized) {
+                        meterDatosUser(usernameSH!!, emailSH!!, imgUrlSH!!)
+                    }else {
+                        datosUserSH = requireActivity().getSharedPreferences("datosUserSh", MODE_PRIVATE)
+                        meterDatosUser(usernameSH!!, emailSH!!, imgUrlSH!!)
+                    }
                     auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener { signInTask ->
                             if (signInTask.isSuccessful) {

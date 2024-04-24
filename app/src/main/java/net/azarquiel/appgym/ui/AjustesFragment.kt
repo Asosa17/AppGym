@@ -16,11 +16,13 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.health.connect.datatypes.units.Length
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.text.Editable
 import android.transition.Fade
 import android.transition.Visibility
 import android.util.Log
@@ -37,10 +39,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.animation.doOnEnd
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.view.get
+import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
@@ -55,6 +59,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.azarquiel.appgym.R
 import net.azarquiel.appgym.databinding.FragmentAjustesBinding
+import net.azarquiel.appgym.model.User
+import net.azarquiel.appgym.view.MainActivity
+import net.azarquiel.appgym.view.PrincipalActivity
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -64,12 +71,19 @@ import java.util.Date
 import java.util.Locale
 
 class AjustesFragment : Fragment() {
+    private lateinit var tvpesouser: TextView
+    private lateinit var tvAlturauser: TextView
+    private lateinit var UserLocal: User
+    private lateinit var animator: ValueAnimator
+    private var startHeight: Int = 0
+    private var startHeight2: Int = 0
     private var visibility: Int = View.GONE
     private lateinit var datos: ConstraintLayout
     private lateinit var clajustes: ConstraintLayout
     private lateinit var flecha: ImageView
     private lateinit var binding: FragmentAjustesBinding
     private lateinit var imageUrl: String
+    private lateinit var email: String
     private lateinit var dialog: Dialog
     private var userlocal: FirebaseUser?=null
     private lateinit var IvUserAvatar: ImageView
@@ -94,6 +108,10 @@ class AjustesFragment : Fragment() {
     ): View? {
         binding = FragmentAjustesBinding.inflate(inflater, container, false)
         val root = binding.root
+        // Calcular startHeight utilizando datos1aj
+        root.post {
+            startHeight = binding.datos1aj.height
+        }
         return root
     }
 
@@ -105,12 +123,23 @@ class AjustesFragment : Fragment() {
         getUser()
         val imageUrl = datosUserSH.getString("imageUrl", null)
         val username = datosUserSH.getString("username",null)
+        email = datosUserSH.getString("email",null).toString()
+
         if (!imageUrl.isNullOrEmpty()) {
             Picasso.get().load(imageUrl).into(binding.IvUserAvatar)
         }
         if (!username.isNullOrEmpty()) {
             binding.tvNombreUsuarioAjustes.setText(username)
         }
+        tvAlturauser=binding.tvAlturauser
+        tvpesouser=binding.tvpesouser
+
+        allOnclicks()
+
+        onResultImage()
+    }
+
+    private fun allOnclicks() {
         binding.IvUserAvatar.setOnClickListener {
             if (userlocal != null) {
                 openDialog()
@@ -118,7 +147,6 @@ class AjustesFragment : Fragment() {
                 msg("Inicia sesión o regístrate")
             }
         }
-
         binding.datos1aj.setOnClickListener {
             visibility=binding.cl1ajustes.visibility
             expandir(1,visibility)
@@ -141,12 +169,26 @@ class AjustesFragment : Fragment() {
             visibility=binding.clajsutes4.visibility
             expandir(4,visibility)
             isExpanded4 = !isExpanded4
-
+        }
+        binding.ivsaveajustes.setOnClickListener {
+            guardarStats()
         }
 
-        onResultImage()
+        binding.btncerrarsesion.setOnClickListener {
+            logOut()
+            val intent=Intent(requireContext(), MainActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish()
+        }
     }
 
+    private fun logOut() {
+        auth.signOut()
+        userlocal=null
+        val editor = datosUserSH.edit()
+        editor.clear()
+        editor.apply()
+    }
 
 
     private fun expandir(id:Int, visibility: Int) {
@@ -189,13 +231,19 @@ class AjustesFragment : Fragment() {
         cambiarVisibilidadConRetraso(clajustes, newVisibility)
 
         // Altura inicial y final
-        val startHeight = datos.height
-        val endHeight = if (isExpanded) 193 else startHeight+250
+
+        //val startHeight = datos.height
+        val endHeight = if (isExpanded) startHeight else startHeight+250
 
         val duration = 800L // Duración de la animación en milisegundos
 
         // Crear un ValueAnimator para cambiar la altura del ConstraintLayout
-        val animator = ValueAnimator.ofInt(startHeight, endHeight)
+        if (isExpanded){
+            animator = ValueAnimator.ofInt(startHeight2+43, endHeight)
+
+        }else{
+            animator = ValueAnimator.ofInt(startHeight, endHeight)
+        }
         animator.duration = duration
 
         // Cambiar la rotación de la flecha
@@ -209,7 +257,17 @@ class AjustesFragment : Fragment() {
             datos.layoutParams = layoutParams
         }
         // Iniciar la animación
+        binding.datos1aj.isClickable=false
+        binding.datos2aj.isClickable=false
+        binding.datos3aj.isClickable=false
+        binding.datos4aj.isClickable=false
         animator.start()
+        animator.doOnEnd {
+            binding.datos1aj.isClickable=true
+            binding.datos2aj.isClickable=true
+            binding.datos3aj.isClickable=true
+            binding.datos4aj.isClickable=true
+        }
         Log.d("expandir"," "+isExpanded)
     }
 
@@ -220,6 +278,9 @@ class AjustesFragment : Fragment() {
             withContext(Dispatchers.Main) {
                 // Cambiar la visibilidad en el hilo principal después del retraso
                 view.visibility = newVisibility
+                startHeight2=datos.height
+                datos.setPadding(0,0,0,0)
+
             }
         }
     }
@@ -280,21 +341,15 @@ class AjustesFragment : Fragment() {
     }
 
     fun onClickOpenGalery() {
-            selectImage()
+        selectImage()
     }
     fun onClickOpenCamara() {
         // Verificar si el permiso de la cámara ya está concedido
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
         ) {
             // Si el permiso no está concedido, solicitarlo al usuario
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.CAMERA),
-                CAMERA_PERMISSION_REQUEST_CODE
-            )
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
+            dispatchTakePictureIntent()
         } else {
             // El permiso ya está concedido, puedes iniciar la actividad de la cámara
             dispatchTakePictureIntent()
@@ -306,13 +361,29 @@ class AjustesFragment : Fragment() {
         userlocal = currentUser!!
         if (userlocal != null) {
             val userDocument = userlocal?.email?.let { db.collection("users").document(it) }
-
             userDocument!!.get()
                 .addOnSuccessListener { document ->
                     if (document.exists()) {
-
+                        val altura = document.getString("altura") ?: ""
+                        tvAlturauser.text = Editable.Factory.getInstance().newEditable(altura)
+                        // Obtener el mapa de pesos del documento si existe
+                        val pesoMap = document["peso"] as? Map<String, Any>
+                        if (pesoMap != null) {
+                            val keys = pesoMap.keys.sortedDescending()
+                            val lastKey = keys.firstOrNull()
+                            if (lastKey != null) {
+                                val lastPeso = pesoMap[lastKey].toString()
+                                tvpesouser.text = Editable.Factory.getInstance().newEditable(lastPeso)
+                            } else {
+                                // No hay ningún peso registrado
+                                tvpesouser.text = Editable.Factory.getInstance().newEditable("")
+                            }
+                        } else {
+                            // No hay datos de peso en Firebase
+                            tvpesouser.text = Editable.Factory.getInstance().newEditable("")
+                        }
                     } else {
-                        // El documento no existe, maneja esta situación según tus requerimientos
+
                     }
                 }
                 .addOnFailureListener { e ->
@@ -321,6 +392,31 @@ class AjustesFragment : Fragment() {
                 }
         } else {
             // El usuario no está autenticado, maneja esta situación según tus requerimientos
+        }
+    }
+    private fun guardarStats() {
+        if (tvAlturauser.text.toString().isEmpty() || tvpesouser.text.toString().isEmpty()) {
+            Toast.makeText(requireActivity(), "Rellena bien los campos", Toast.LENGTH_LONG).show()
+            return
+        }// Obtener la fecha actual en el formato deseado (por ejemplo, "2022-01-01")
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val tvAlturauser = tvAlturauser.text.toString()
+        val tvpesouser = tvpesouser.text.toString()
+
+        val pesoMap: MutableMap<String, Any> = HashMap()
+        pesoMap[currentDate] = tvpesouser
+
+        // Actualizar la colección "users" en Firestore con la altura y el mapa de pesos
+        val dataToUpdate: MutableMap<String, Any> = HashMap()
+        dataToUpdate["altura"] = tvAlturauser
+        dataToUpdate["peso"] = pesoMap
+
+        db.collection("users").document(email).update(dataToUpdate)
+            .addOnSuccessListener { documentReference ->
+                Toast.makeText(requireContext(),"Datos guardados",Toast.LENGTH_SHORT).show()
+            }
+        .addOnFailureListener{ e ->
+            Log.w("TAG","Error adding document", e)
         }
     }
 
@@ -415,226 +511,3 @@ class AjustesFragment : Fragment() {
 
 
 }
-/*
-    private fun saveBitmapImage(bitmap: Bitmap) {
-        val timestamp = System.currentTimeMillis()
-        val values = ContentValues()
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/png")
-        values.put(MediaStore.Images.Media.DATE_ADDED, timestamp)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            values.put(MediaStore.Images.Media.DATE_TAKEN, timestamp)
-            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/" + getString(R.string.app_name))
-            values.put(MediaStore.Images.Media.IS_PENDING, true)
-            val uri = requireActivity().contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-            if (uri != null) {
-                try {
-                    val outputStream = requireActivity().contentResolver.openOutputStream(uri)
-                    if (outputStream != null) {
-                        try {
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                            outputStream.close()
-                        } catch (e: Exception) {
-                            Log.e(TAG, "saveBitmapImage: ", e)
-                        }
-                    }
-                    values.put(MediaStore.Images.Media.IS_PENDING, false)
-                    requireActivity().contentResolver.update(uri, values, null, null)
-                    Toast.makeText(requireContext(), "Saved...", Toast.LENGTH_SHORT).show()
-                } catch (e: Exception) {
-                    Log.e(TAG, "saveBitmapImage: ", e)
-                }
-            }
-        } else {
-            val imageFileFolder = File(Environment.getExternalStorageDirectory().toString() + '/' + getString(R.string.app_name))
-            if (!imageFileFolder.exists()) {
-                imageFileFolder.mkdirs()
-            }
-            val mImageName = "$timestamp.png"
-            val imageFile = File(imageFileFolder, mImageName)
-            try {
-                val outputStream: OutputStream = FileOutputStream(imageFile)
-                try {
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                    outputStream.close()
-                } catch (e: Exception) {
-                    Log.e(TAG, "saveBitmapImage: ", e)
-                }
-                values.put(MediaStore.Images.Media.DATA, imageFile.absolutePath)
-                requireActivity().contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-                Toast.makeText(requireContext(), "Saved...", Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
-                Log.e(TAG, "saveBitmapImage: ", e)
-            }
-        }
-    }
-
-class AjustesFragment : Fragment() {
-
-    private lateinit var dialog: Dialog
-    private var userlocal: FirebaseUser?=null
-    private lateinit var IvUserAvatar: ImageView
-    private lateinit var launcherImage : ActivityResultLauncher<Intent>
-    private lateinit var auth: FirebaseAuth
-    private lateinit var db: FirebaseFirestore
-    private lateinit var root: View
-    private lateinit var btnCamara: Button
-    private lateinit var btnGalery: Button
-    private val REQUEST_IMAGE_CAPTURE = 1
-    private val CAMERA_PERMISSION_REQUEST_CODE = 100
-
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        root= inflater.inflate(R.layout.fragment_ajustes, container, false)
-        return root
-
-    }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        auth = Firebase.auth
-        db = Firebase.firestore
-        getUser()
-        IvUserAvatar=root.findViewById<ImageView>(R.id.IvUserAvatar)
-
-        IvUserAvatar.setOnClickListener {
-            if (userlocal != null) {
-                openDialog()
-
-            }else{
-                msg("Inicia sesion o registrate")
-            }
-        }
-
-        onResultImage()
-    }
-
-    private fun openDialog() {
-        val builder = AlertDialog.Builder(requireContext())
-        val inflater = layoutInflater
-        val dialogView = inflater.inflate(R.layout.dialog_creator, null)
-
-        btnCamara=dialogView.findViewById<Button>(R.id.btnCamara)
-        btnGalery=dialogView.findViewById<Button>(R.id.btnGalery)
-
-
-        btnGalery.setOnClickListener {onClickOpenGalery() }
-        builder.setView(dialogView)
-            .setTitle("Agregar imagen desde: ")
-
-
-            .setNegativeButton("Cancelar") { dialog, id ->
-                // Acciones a realizar al hacer clic en "Cancelar"
-            }
-
-
-        dialog = builder.create()
-        dialog.show()
-    }
-    fun onClickOpenGalery(){
-        selectImage()
-    }
-    private fun getUser() {
-        // Obtén el usuario autenticado
-        val currentUser = auth.currentUser
-        userlocal=currentUser
-        if (userlocal != null) {
-            val userDocument = userlocal?.email?.let { db.collection("users").document(it) }
-
-            userDocument!!.get()
-                .addOnSuccessListener { document ->
-                    if (document.exists()) {
-                        // El documento existe, obtén los datos del usuario
-                        val imageUrl = document.getString("imageUrl")
-
-
-                    } else {
-                        // El documento no existe, maneja esta situación según tus requerimientos
-                    }
-                }
-                .addOnFailureListener { e ->
-                    // Maneja cualquier error que pueda ocurrir al realizar la consulta
-                    Log.w("TAG", "Error al obtener datos del usuario: ", e)
-                }
-        } else {
-            // El usuario no está autenticado, maneja esta situación según tus requerimientos
-        }
-    }
-// Función para mostrar la pantalla principal de la aplicación
-
-    private fun uploadImage(imageUri: Uri) {
-        // Fin ProgressBar
-        val sdf = SimpleDateFormat("yyyy_M_dd_HH_mm_ss", Locale.getDefault())
-        val now = Date()
-        val filename = sdf.format(now)
-        val storageReference = FirebaseStorage.getInstance().getReference("FotosUsers/$filename ${userlocal!!.email}")
-        storageReference.putFile(imageUri)
-            .addOnSuccessListener { taskSnapshot ->
-                // Obtener la URL de la imagen después de subirla
-                storageReference.downloadUrl.addOnSuccessListener { uri ->
-                    // Guardar la URL de la imagen en el usuario actual
-                    auth.currentUser?.let { user ->
-                        val userUpdates = hashMapOf<String, Any>(
-                            "imageUrl" to uri.toString()
-                        )
-                        db.collection("users").document(user.email!!).update(userUpdates)
-                            .addOnSuccessListener {
-                                Log.d("UploadImage", "URL de imagen guardada en la base de datos")
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("UploadImage", "Error al guardar URL de imagen en la base de datos: $e")
-                            }
-                    }
-                }
-            }
-            .addOnFailureListener { e ->
-                // Manejar errores durante la subida de la imagen
-                msg("Error al subir la imagen: ${e.message}")
-            }
-    }
-    // Método para adquirir una imagen de la gallery
-    private fun selectImage() {
-        val intent = Intent()
-        intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
-        launcherImage.launch(intent)
-    }
-    // Listener para cuando nos regrese la imagen elegida
-    private fun onResultImage() {
-        launcherImage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
-            if (result.resultCode == AppCompatActivity.RESULT_OK) {
-                result.data?.let { intent ->
-                    intent.data?.let { uri ->
-                        // ya podemos mostrar la imagen en una vista ImageView
-                        IvUserAvatar.setImageURI(uri)
-                        // vamos a subirla a firebase y adquirir su url
-                        // para guardarla en la BDs para visualizarla con picasso
-                        // para el futuro
-                        uploadImage(uri)
-                        (dialog as AlertDialog).dismiss()
-                    }
-                }
-            }else if (result.resultCode == REQUEST_IMAGE_CAPTURE && result.data != null) {
-                val imageBitmap = result.data?.extras?.get("data") as Bitmap
-                val tempUri = getImageUri(requireContext(), imageBitmap)
-                IvUserAvatar.setImageBitmap(imageBitmap)
-                uploadImage(tempUri)
-            }
-        }
-    }
-    private fun msg(s: String) {
-
-    }
-
-    private fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
-        val bytes = ByteArrayOutputStream()
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val path = MediaStore.Images.Media.insertImage(inContext.contentResolver, inImage, "Title", null)
-        return Uri.parse(path)
-    }
-
-
-}
-
-*/

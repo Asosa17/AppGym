@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var auth: FirebaseAuth
-
+    private lateinit var datosUserSH: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         auth = Firebase.auth
         val currentUser = auth.currentUser
         userlocal=currentUser
-
+        datosUserSH= getSharedPreferences("datosUserSh", MODE_PRIVATE)
         setInitialFragment()
     }
     private fun setInitialFragment() {
