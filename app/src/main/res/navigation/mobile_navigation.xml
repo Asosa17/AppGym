@@ -10,8 +10,6 @@
         android:name="net.azarquiel.appgym.ui.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home"
-
-
     />
 
     <fragment

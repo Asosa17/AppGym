@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -21,6 +22,7 @@ import com.google.firebase.firestore.firestore
 import net.azarquiel.appgym.R
 import net.azarquiel.appgym.model.User
 import net.azarquiel.appgym.view.PrincipalActivity
+import java.util.Locale
 
 
 class UserCompleteFragment : Fragment() {
@@ -48,6 +50,7 @@ class UserCompleteFragment : Fragment() {
         db = Firebase.firestore
         tvusernamebvnd=root.findViewById<TextView>(R.id.tvusernamebvnd)
         datosUserSH = requireActivity().getSharedPreferences("datosUserSh", MODE_PRIVATE)
+
         val username = datosUserSH.getString("username", null)
         if (!username.isNullOrEmpty()) {
             tvusernamebvnd.setText(username)
@@ -70,7 +73,8 @@ class UserCompleteFragment : Fragment() {
                 .addOnSuccessListener { document ->
                     if (document.exists()) {
                         // El documento existe, obtén los datos del usuario
-                        imageUrl = document.getString("username")!!
+                        imageUrl = document.getString("imageUrl")!!
+                        meterDatosUser(imageUrl)
                     } else {
                         // El documento no existe, maneja esta situación según tus requerimientos
                     }
@@ -90,5 +94,10 @@ class UserCompleteFragment : Fragment() {
         startActivity(intent)
         requireActivity().finish()
     }
-
+    //SharePreferences
+    private fun meterDatosUser(imageUrl:String) {
+        var editor = datosUserSH.edit()
+        editor.putString("imageUrl", imageUrl)
+        editor.commit()
+    }
 }

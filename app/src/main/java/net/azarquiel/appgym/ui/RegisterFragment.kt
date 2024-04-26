@@ -74,6 +74,7 @@ class RegisterFragment : Fragment() {
         postHast["username"] = etnombreuserrg.text.toString()
         postHast["email"] = etemailrg.text.toString()
         postHast["pass"] = etpassrg.text.toString()
+        postHast["imageUrl"] = "null"
         // Verificar si el usuario ya existe
         db.collection("users").document(email).get()
             .addOnSuccessListener { documentSnapshot ->
@@ -115,7 +116,7 @@ class RegisterFragment : Fragment() {
                                 msg("Error ${task.exception?.message}")
                             }
                         }
-                        meterDatosUser(etnombreuserrg.text.toString(),etemailrg.text.toString())
+                    meterDatosUser(etnombreuserrg.text.toString(),etemailrg.text.toString())
                 }
             }
             .addOnFailureListener { e ->

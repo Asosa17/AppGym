@@ -1,5 +1,6 @@
 package net.azarquiel.appgym.ui
 
+import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.SharedPreferences
@@ -44,8 +45,7 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         auth = Firebase.auth
         db = Firebase.firestore
-
-
+        datosUserSH = requireActivity().getSharedPreferences("datosUserSh", Context.MODE_PRIVATE)
         etemail= root.findViewById<EditText>(R.id.etemail)
         etpass= root.findViewById<EditText>(R.id.etpass)
         btnregistro=root.findViewById<Button>(R.id.btnregs)
@@ -72,12 +72,7 @@ class LoginFragment : Fragment() {
                     val usernameSH = documentSnapshot.getString("username")
                     val emailSH = documentSnapshot.getString("email")
                     val imgUrlSH = documentSnapshot.getString("imageUrl")
-                    if (::datosUserSH.isInitialized) {
-                        meterDatosUser(usernameSH!!, emailSH!!, imgUrlSH!!)
-                    }else {
-                        datosUserSH = requireActivity().getSharedPreferences("datosUserSh", MODE_PRIVATE)
-                        meterDatosUser(usernameSH!!, emailSH!!, imgUrlSH!!)
-                    }
+                    meterDatosUser(usernameSH!!, emailSH!!, imgUrlSH!!)
                     auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener { signInTask ->
                             if (signInTask.isSuccessful) {

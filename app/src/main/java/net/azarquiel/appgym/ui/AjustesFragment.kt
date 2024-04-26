@@ -13,6 +13,7 @@ import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -38,11 +39,14 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.doOnEnd
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.recreate
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.core.os.LocaleListCompat
 import androidx.core.view.get
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
@@ -125,7 +129,9 @@ class AjustesFragment : Fragment() {
         val username = datosUserSH.getString("username",null)
         email = datosUserSH.getString("email",null).toString()
 
-        if (!imageUrl.isNullOrEmpty()) {
+        if (imageUrl.equals("null")||imageUrl.isNullOrEmpty()) {
+            binding.IvUserAvatar.setImageResource(R.drawable.noimage)
+        }else{
             Picasso.get().load(imageUrl).into(binding.IvUserAvatar)
         }
         if (!username.isNullOrEmpty()) {
@@ -180,6 +186,30 @@ class AjustesFragment : Fragment() {
             startActivity(intent)
             requireActivity().finish()
         }
+        binding.ivesp.setOnClickListener{
+            actualizarIdioma("es")
+        }
+        binding.iving.setOnClickListener{
+            actualizarIdioma("en")
+        }
+    }
+
+    private fun actualizarIdioma(idioma:String) {
+        val locale = Locale(idioma)
+        val config = resources.configuration
+        var editor = datosUserSH.edit()
+        val intent = Intent(requireContext(), MainActivity::class.java)
+
+        Locale.setDefault(locale)
+        config.setLocale(locale)
+        // Actualiza el idioma
+        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(idioma))
+
+        requireActivity().finish()
+        startActivity(intent)
+
+        editor.putString("idioma", idioma)
+        editor.apply()
     }
 
     private fun logOut() {
@@ -398,25 +428,42 @@ class AjustesFragment : Fragment() {
         if (tvAlturauser.text.toString().isEmpty() || tvpesouser.text.toString().isEmpty()) {
             Toast.makeText(requireActivity(), "Rellena bien los campos", Toast.LENGTH_LONG).show()
             return
-        }// Obtener la fecha actual en el formato deseado (por ejemplo, "2022-01-01")
+        }
+        // Obtener la fecha actual en el formato deseado (por ejemplo, "2022-01-01")
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val tvAlturauser = tvAlturauser.text.toString()
         val tvpesouser = tvpesouser.text.toString()
+        // Obtener el documento actual del usuario
+        val userDocumentRef = db.collection("users").document(email)
+        userDocumentRef.get().addOnSuccessListener { documentSnapshot ->
+            if (documentSnapshot.exists()) {
+                // Obtener el mapa de pesos actual
+                val pesoMap = documentSnapshot.data?.get("peso") as? MutableMap<String, Any> ?: HashMap()
 
-        val pesoMap: MutableMap<String, Any> = HashMap()
-        pesoMap[currentDate] = tvpesouser
+                // Agregar el nuevo peso al mapa
+                pesoMap[currentDate] = tvpesouser
 
-        // Actualizar la colección "users" en Firestore con la altura y el mapa de pesos
-        val dataToUpdate: MutableMap<String, Any> = HashMap()
-        dataToUpdate["altura"] = tvAlturauser
-        dataToUpdate["peso"] = pesoMap
+                // Actualizar la colección "users" en Firestore con la altura y el mapa de pesos actualizado
+                val dataToUpdate: MutableMap<String, Any> = HashMap()
+                dataToUpdate["altura"] = tvAlturauser
+                dataToUpdate["peso"] = pesoMap
 
-        db.collection("users").document(email).update(dataToUpdate)
-            .addOnSuccessListener { documentReference ->
-                Toast.makeText(requireContext(),"Datos guardados",Toast.LENGTH_SHORT).show()
+                // Actualizar el documento en Firestore
+                userDocumentRef.update(dataToUpdate)
+                    .addOnSuccessListener {
+                        Toast.makeText(requireContext(), "Datos guardados", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("TAG", "Error al actualizar el documento", e)
+                        Toast.makeText(requireContext(), "Error al guardar los datos", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                Log.d("TAG", "El documento del usuario no existe")
+                Toast.makeText(requireContext(), "El usuario no existe", Toast.LENGTH_SHORT).show()
             }
-        .addOnFailureListener{ e ->
-            Log.w("TAG","Error adding document", e)
+        }.addOnFailureListener { e ->
+            Log.w("TAG", "Error al obtener el documento del usuario", e)
+            Toast.makeText(requireContext(), "Error al obtener los datos del usuario", Toast.LENGTH_SHORT).show()
         }
     }
 

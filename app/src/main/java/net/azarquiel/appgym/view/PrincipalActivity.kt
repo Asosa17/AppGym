@@ -1,5 +1,8 @@
 package net.azarquiel.appgym.view
 
+import android.content.Intent
+import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -19,6 +22,7 @@ import net.azarquiel.appgym.ui.HomeFragment
 import net.azarquiel.appgym.ui.LoginFragment
 import net.azarquiel.appgym.ui.RutinasFragment
 import net.azarquiel.appgym.ui.UserCompleteFragment
+import java.util.Locale
 
 class PrincipalActivity : AppCompatActivity() {
 
@@ -63,4 +67,5 @@ class PrincipalActivity : AppCompatActivity() {
         fragmentTransaction.replace(R.id.FrameLayout, fragment)
         fragmentTransaction.commit()
     }
+
 }
