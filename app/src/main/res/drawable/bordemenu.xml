@@ -13,7 +13,7 @@
             <solid android:color="@android:color/black" />
             <stroke
                 android:width="4dp"
-                android:color="@color/navViewRojo" />
+                android:color="?attr/colorPrimary" />
 
         </shape>
     </item>

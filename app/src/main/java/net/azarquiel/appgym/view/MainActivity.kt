@@ -35,7 +35,9 @@ class MainActivity : AppCompatActivity() {
 
         datosUserSH= getSharedPreferences("datosUserSh", MODE_PRIVATE)
         val idioma = datosUserSH.getString("idioma","en").toString()
+        val tema = datosUserSH.getString("tema","1").toString()
         detecidioma(idioma)
+        detectatema(tema)
 
         auth = Firebase.auth
         val currentUser = auth.currentUser
@@ -59,5 +61,20 @@ class MainActivity : AppCompatActivity() {
         Locale.setDefault(locale)
         config.setLocale(locale)
 
+    }
+    private fun detectatema(tema:String){
+        val tema = tema.toInt()
+        when(tema){
+            1-> {
+                setTheme(R.style.Base_Theme_TemaApp1)
+            }
+            2->{
+                setTheme(R.style.Theme_TemaApp2)
+            }
+            3->{
+                setTheme(R.style.Theme_TemaApp3)
+            }
+
+        }
     }
 }

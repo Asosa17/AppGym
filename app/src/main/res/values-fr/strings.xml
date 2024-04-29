@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AppGym</string>
+    //menu
+    <string name="title_home">Début</string>
+    <string name="title_rutinas">Routines</string>
+    <string name="title_chat">Chat</string>
+    <string name="title_dietas">Diètes</string>
+    <string name="title_ajustes">Paramètres</string>
+    //loginFragment
+    <string name="lg_welcome">Bienvenue</string>
+    <string name="lg_Ini">Connexion</string>
+    <string name="lg_Ini2">Connectez-vous pour continuer</string>
+    <string name="lg_Regis">S\'inscrire</string>
+    <string name="lg_email">Email</string>
+    <string name="lg_pass">Mot de passe</string>
+    <string name="lg_phpass">mot de passe de 6 caractères minimum</string>
+    //RegisFramgent
+    <string name="rg_Regis">S\'inscrire</string>
+    <string name="rg_linklogin">Vous avez déjà un compte? Connectez-vous ici</string>
+    <string name="rg_name">Nom</string>
+    <string name="rg_nameuserph">Nom d\'utilisateur</string>
+    <string name="rg_email">Email</string>
+    <string name="rg_pass">Mot de passe</string>
+    <string name="rg_phpass">mot de passe de 6 caractères minimum</string>
+    <string name="rg_Regis2">s\'inscrire</string>
+    <string name="rg_back">Retour</string>
+    //UserCompleteFragment
+    <string name="uc_Welcome">Bienvenue!</string>
+    <string name="uc_name">NOM</string>
+    <string name="uc_Start">Démarrer</string>
+    //AjustesFragment
+    <string name="af_actudatos">Mettre à jour les données</string>
+    <string name="af_altura">Hauteur:</string>
+    <string name="af_peso">Poids:</string>
+    <string name="af_cambiaridioma">Changer de langue</string>
+    <string name="af_cambiartema">Changer de thème</string>
+    <string name="af_cerrarsesion">Déconnexion</string>
+    <string name="af_pregcerrarsesion">Êtes-vous sûr de vouloir vous déconnecter?</string>
+    <string name="af_confcerrarsesion">Confirmer</string>
+</resources>

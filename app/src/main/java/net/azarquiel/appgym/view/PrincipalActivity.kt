@@ -28,12 +28,22 @@ class PrincipalActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPricipalBinding
     private lateinit var fragment: Fragment
+    private lateinit var datosUserSH: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+
+        datosUserSH= getSharedPreferences("datosUserSh", MODE_PRIVATE)
+        val tema = datosUserSH.getString("tema","1").toString()
+        detectatema(tema)
+
+
         binding = ActivityPricipalBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        detectafondo(tema)
 
         setInitialFragment()
 
@@ -54,6 +64,23 @@ class PrincipalActivity : AppCompatActivity() {
         }
 
     }
+
+    private fun detectafondo(tema: String) {
+        val tema = tema.toInt()
+        when(tema){
+            1-> {
+                binding.FrameLayout.setBackgroundResource(R.drawable.fondoajustes)
+            }
+            2->{
+                binding.FrameLayout.setBackgroundResource(R.drawable.fondoajustesazul)
+            }
+            3->{
+                binding.FrameLayout.setBackgroundResource(R.drawable.fondoajustesverde)
+            }
+
+        }
+    }
+
     private fun setInitialFragment() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
 
@@ -66,6 +93,21 @@ class PrincipalActivity : AppCompatActivity() {
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.FrameLayout, fragment)
         fragmentTransaction.commit()
+    }
+    private fun detectatema(tema:String){
+        val tema = tema.toInt()
+        when(tema){
+            1-> {
+                setTheme(R.style.Base_Theme_TemaApp1)
+            }
+            2->{
+                setTheme(R.style.Theme_TemaApp2)
+            }
+            3->{
+                setTheme(R.style.Theme_TemaApp3)
+            }
+
+        }
     }
 
 }

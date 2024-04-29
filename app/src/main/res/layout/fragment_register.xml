@@ -94,7 +94,7 @@
             android:layout_marginStart="60dp"
             android:layout_marginEnd="60dp"
             android:layout_marginBottom="52dp"
-            android:backgroundTint="#B7261E"
+            android:backgroundTint="?attr/colorPrimary"
             android:text="@string/rg_Regis2"
             android:textAlignment="center"
             android:textSize="20sp"
@@ -122,7 +122,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="11dp"
             android:text="@string/rg_linklogin"
-            android:textColor="#B7261E"
+            android:textColor="?attr/colorPrimary"
             app:layout_constraintBottom_toTopOf="@+id/textView9"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

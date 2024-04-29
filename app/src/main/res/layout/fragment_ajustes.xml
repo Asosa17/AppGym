@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/fondoajustes"
     tools:context=".ui.AjustesFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -72,7 +71,7 @@
                 android:layout_width="38dp"
                 android:layout_height="38dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="24dp"
+                android:layout_marginEnd="16dp"
                 android:background="@drawable/botonflecha"
                 android:rotation="-90"
                 android:src="@drawable/flechadown"
@@ -358,6 +357,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView4">
 
                 <ImageView
+                    android:id="@+id/imageView8"
                     android:layout_width="0dp"
                     android:layout_height="4dp"
                     android:layout_marginStart="20dp"
@@ -366,6 +366,47 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/ivtemarojo"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="48dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:src="@drawable/circulorojo"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/imageView8" />
+
+                <ImageView
+                    android:id="@+id/ivtemaaazul"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="16dp"
+                    android:src="@drawable/circuloazul"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/ivtemaverde"
+                    app:layout_constraintHorizontal_bias="0.4"
+                    app:layout_constraintStart_toEndOf="@+id/ivtemarojo"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0" />
+
+                <ImageView
+                    android:id="@+id/ivtemaverde"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="48dp"
+                    android:layout_marginBottom="16dp"
+                    android:src="@drawable/circuloverde"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -445,7 +486,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:backgroundTint="#9F3838"
+                    android:backgroundTint="?attr/colorPrimary"
                     android:text="@string/af_confcerrarsesion"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

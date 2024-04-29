@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -46,10 +47,12 @@ class UserCompleteFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        datosUserSH = requireActivity().getSharedPreferences("datosUserSh", MODE_PRIVATE)
+        val tema = datosUserSH.getString("tema","1").toString()
+        detectatema(tema)
         auth = Firebase.auth
         db = Firebase.firestore
         tvusernamebvnd=root.findViewById<TextView>(R.id.tvusernamebvnd)
-        datosUserSH = requireActivity().getSharedPreferences("datosUserSh", MODE_PRIVATE)
 
         val username = datosUserSH.getString("username", null)
         if (!username.isNullOrEmpty()) {
@@ -99,5 +102,23 @@ class UserCompleteFragment : Fragment() {
         var editor = datosUserSH.edit()
         editor.putString("imageUrl", imageUrl)
         editor.commit()
+    }
+    private fun detectatema(tema:String){
+        val tema = tema.toInt()
+        when(tema){
+            1-> {
+                val ivfondoiniuc=root.findViewById<ImageView>(R.id.ivfondoiniuc)
+                ivfondoiniuc.setImageResource(R.drawable.fondorojohd)
+            }
+            2->{
+                val ivfondoiniuc=root.findViewById<ImageView>(R.id.ivfondoiniuc)
+                ivfondoiniuc.setImageResource(R.drawable.fondoiniazul)
+            }
+            3->{
+                val ivfondoiniuc=root.findViewById<ImageView>(R.id.ivfondoiniuc)
+                ivfondoiniuc.setImageResource(R.drawable.fondoiniverdeuc)
+            }
+
+        }
     }
 }

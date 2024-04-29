@@ -192,6 +192,42 @@ class AjustesFragment : Fragment() {
         binding.iving.setOnClickListener{
             actualizarIdioma("en")
         }
+        binding.ivfran.setOnClickListener{
+            actualizarIdioma("fr")
+        }
+        binding.ivtemarojo.setOnClickListener{
+            cambiartema(1)
+        }
+        binding.ivtemaaazul.setOnClickListener{
+            cambiartema(2)
+        }
+        binding.ivtemaverde.setOnClickListener{
+            cambiartema(3)
+        }
+    }
+
+    private fun cambiartema(tema:Int) {
+        var editor = datosUserSH.edit()
+        val intent = Intent(requireContext(), MainActivity::class.java)
+        when(tema){
+            1-> {
+                requireActivity().setTheme(R.style.Base_Theme_TemaApp1)
+                editor.putString("tema", "1")
+                editor.apply()
+            }
+            2->{
+                requireActivity().setTheme(R.style.Theme_TemaApp2)
+                editor.putString("tema", "2")
+                editor.apply()
+            }
+            3->{
+                requireActivity().setTheme(R.style.Theme_TemaApp3)
+                editor.putString("tema", "3")
+                editor.apply()
+            }
+        }
+        requireActivity().finish()
+        startActivity(intent)
     }
 
     private fun actualizarIdioma(idioma:String) {
@@ -379,7 +415,6 @@ class AjustesFragment : Fragment() {
         ) {
             // Si el permiso no está concedido, solicitarlo al usuario
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
-            dispatchTakePictureIntent()
         } else {
             // El permiso ya está concedido, puedes iniciar la actividad de la cámara
             dispatchTakePictureIntent()
