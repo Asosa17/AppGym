@@ -38,5 +38,12 @@
     <string name="af_cerrarsesion">Cerrar sesión</string>
     <string name="af_pregcerrarsesion">¿Seguro que quiere cerrar sesión?</string>
     <string name="af_confcerrarsesion">Confirmar</string>
-
+    //DietasFragment
+    <string name="df_calendarTitle">FECHA DEL EVENTO</string>
+    <string name="df_Comida">Comida</string>
+    <string name="df_Cantidad">Cantidad</string>
+    <string name="df_Kcal">Kcal/100gr</string>
+    <string name="df_KcalComida">Kcal</string>
+    <string name="df_btnAñaComida">Añadir Comida</string>
+    <string name="df_kcaltotalessuma">Kcal totales:</string>
 </resources>

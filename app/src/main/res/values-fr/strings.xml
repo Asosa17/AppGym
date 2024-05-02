@@ -38,4 +38,12 @@
     <string name="af_cerrarsesion">Déconnexion</string>
     <string name="af_pregcerrarsesion">Êtes-vous sûr de vouloir vous déconnecter?</string>
     <string name="af_confcerrarsesion">Confirmer</string>
+    //DietasFragment
+    <string name="df_calendarTitle">EVENT DATE</string>
+    <string name="df_Comida">Repas</string>
+    <string name="df_Cantidad">Montant</string>
+    <string name="df_Kcal">Kcal/100gr</string>
+    <string name="df_KcalComida">Kcal</string>
+    <string name="df_btnAñaComida">Ajouter de la nourriture</string>
+    <string name="df_kcaltotalessuma">Calories totales:</string>
 </resources>

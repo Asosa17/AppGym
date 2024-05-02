@@ -38,4 +38,12 @@
     <string name="af_cerrarsesion">Log out</string>
     <string name="af_pregcerrarsesion">Are you sure you want to log out?</string>
     <string name="af_confcerrarsesion">Confirm</string>
+    //DietasFragment
+    <string name="df_calendarTitle">EVENT DATE</string>
+    <string name="df_Comida">Meal</string>
+    <string name="df_Cantidad">Amount</string>
+    <string name="df_Kcal">Kcal/100gr</string>
+    <string name="df_KcalComida">Kcal</string>
+    <string name="df_btnAñaComida">Add meal</string>
+    <string name="df_kcaltotalessuma">Total Kcal:</string>
 </resources>
