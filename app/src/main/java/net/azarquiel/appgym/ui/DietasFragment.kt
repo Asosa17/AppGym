@@ -32,6 +32,7 @@ import java.util.Locale
 
 class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
 
+    private var cont: Int = 0
     private lateinit var datosUserSH: SharedPreferences
     private lateinit var btnaceptarcomida: Button
     private lateinit var eddnombrecomida: EditText
@@ -115,7 +116,7 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
             val comida = itemView.tag as Comida // Obtener el objeto Comida asociado al itemView
             val position = comidas.indexOf(comida) // Encontrar la posición del elemento en el array de comidas
             adapter.deleteItem(position) // Eliminar el elemento del RecyclerView y del array de comidas
-            emilinarcomida(position+1,comida.id)
+            emilinarcomida(comida.id)
             suma-=comida.KcalTotales.toFloat()
             binding.tvkcaltotalessuma.text="%.2f".format(suma).replace(".", ",")
         }
@@ -135,6 +136,7 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
             updateSelectedDateTextView(selectedDate!!)
             obtenerComidasDelDia(selectedDate!!)
             comidas.clear()
+            cont=0
             suma=0F
         }
 
@@ -172,18 +174,22 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
                                         val kcal100 = comida["Kcal100"] as String
                                         val kcalTotales = comida["KcalTotales"] as String
                                         val id=comida["id"]as String
+                                        if (id.toInt()>cont){
+                                            cont=0
+                                            cont+=id.toInt()
+                                        }
                                         suma+=kcalTotales.toFloat()
                                         comidas.add(Comida(nombreComida, cantidad, kcal100, kcalTotales,id))
                                     }
-                                    adapter.setComidas(comidas)
                                     binding.tvkcaltotalessuma.text="%.2f".format(suma).replace(".", ",")
                                     adapter.notifyDataSetChanged()
+                                    adapter.setComidas(comidas)
                                 }else {
                                     comidas.clear()
                                     suma=0F
                                     binding.tvkcaltotalessuma.text="%.2f".format(suma).replace(".", ",")
-                                    adapter.setComidas(comidas)
                                     adapter.notifyDataSetChanged()
+                                    adapter.setComidas(comidas)
                                     Toast.makeText(requireContext(),"No exiten registros para este dia",Toast.LENGTH_SHORT).show()
                                 }
                             }
@@ -198,6 +204,7 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
         }
     }
     private fun añadircomida() {
+        cont++
         dialogañadircomida()
     }
 
@@ -206,6 +213,7 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
         val inflater = layoutInflater
         val dialogView = inflater.inflate(R.layout.dialogcomida, null)
 
+
         eddnombrecomida  = dialogView.findViewById<EditText>(R.id.eddnombrecomida)
         eddcantidad = dialogView.findViewById<EditText>(R.id.eddcantidad)
         eddkcal100 = dialogView.findViewById<EditText>(R.id.eddkcal100)
@@ -213,20 +221,25 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
 
 
         btnaceptarcomida.setOnClickListener {
-            var cantidaddialog= eddcantidad.text.toString()
-            var kcal100dialog=eddkcal100.text.toString()
-            var kcaltotalesdialog=(cantidaddialog.toFloat()*kcal100dialog.toFloat())/100f
-            var comida=Comida(eddnombrecomida.text.toString(), eddcantidad.text.toString(), eddkcal100.text.toString(), "%.2f".format(kcaltotalesdialog).replace(".", ","),(comidas.count()+1).toString())
+            if (eddnombrecomida.text.toString().equals("")||eddcantidad.text.toString().equals("")||eddkcal100.text.toString().equals("")){
+                Toast.makeText(requireContext(),"Rellene los campos",Toast.LENGTH_SHORT).show()
+            }else{
+                var cantidaddialog= eddcantidad.text.toString()
+                var kcal100dialog=eddkcal100.text.toString()
+                var kcaltotalesdialog=(cantidaddialog.toFloat()*kcal100dialog.toFloat())/100f
+                if (cont==0) { cont++ }
+                var comida=Comida(eddnombrecomida.text.toString(), eddcantidad.text.toString(), eddkcal100.text.toString(),String.format("%.2f".format(kcaltotalesdialog).replace(",", ".")) ,(cont).toString())
 
-            comidas.add(0,comida)
-            guardarcomida(comida)
+                comidas.add(0,comida)
+                guardarcomida(comida,cont)
 
-            suma+=kcaltotalesdialog
-            binding.tvkcaltotalessuma.text="%.2f".format(suma).replace(".", ",")
+                suma+=kcaltotalesdialog
+                binding.tvkcaltotalessuma.text="%.2f".format(suma).replace(".", ",")
 
-            adapter.setComidas(comidas)
-            adapter.notifyDataSetChanged()
-            dialog.dismiss()
+                adapter.notifyDataSetChanged()
+                adapter.setComidas(comidas)
+                dialog.dismiss()
+            }
         }
 
 
@@ -235,7 +248,7 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
         dialog.show()
     }
 
-    private fun emilinarcomida(position:Int,id:String) {
+    private fun emilinarcomida(id:String) {
         val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val currentDate = Calendar.getInstance().time
         var fechaFormateada = " "
@@ -244,7 +257,6 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
         }else{
             fechaFormateada=sdf.format(currentDate)
         }
-        var posicion=position
         // Obtener el usuario actualmente autenticado
         val currentUser = auth.currentUser
         currentUser?.let { user ->
@@ -284,7 +296,7 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
             }
          }
     }
-    private fun guardarcomida(comida:Comida) {
+    private fun guardarcomida(comida:Comida,cont:Int) {
         val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val currentDate = Calendar.getInstance().time
         var fechaFormateada = ""
@@ -308,14 +320,14 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
                                 // Obtener el mapa de comidas para la fecha actual o crear uno nuevo si no existe
                                 val comidasFecha = comidasMapa.getOrPut(fechaFormateada) { mutableMapOf<String, Any>() } as MutableMap<String, Any>
                                 // Generar un ID único para la nueva comida
-                                val comidaId = "Comida"+(comidas.count()).toString()
+                                val comidaId = "Comida"+(cont).toString()
                                 // Guardar los datos de la nueva comida en el mapa de comidas
                                 comidasFecha[comidaId] = mapOf(
                                     "NombreComida" to comida.NombreComida,
                                     "Cantidad" to comida.Cantidad,
                                     "Kcal100" to comida.Kcal100,
                                     "KcalTotales" to comida.KcalTotales,
-                                    "id" to comidas.count().toString()
+                                    "id" to comida.id
                                 )
                                 // Actualizar el mapa de comidas en Firestore
                                 userDocument.update("comidas", comidasMapa)

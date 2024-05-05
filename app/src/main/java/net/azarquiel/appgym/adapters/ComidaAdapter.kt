@@ -53,7 +53,7 @@ class ComidaAdapter (val context: Context,
             val edtkcal = itemView.findViewById(R.id.edtkcal) as TextView
             edtkcal.setText(dataItem.Kcal100)
             val tvkcalTotales = itemView.findViewById(R.id.tvkcalTotales) as TextView
-            tvkcalTotales.setText(dataItem.KcalTotales)
+            tvkcalTotales.setText((dataItem.KcalTotales).replace(".", ","))
             val btneliminarcomidadf = itemView.findViewById(R.id.btneliminarcomidadf) as Button
             itemView.tag = dataItem
             btneliminarcomidadf.setOnClickListener { listener.onClickEliminar(itemView) }

@@ -39,20 +39,10 @@ class HomeFragment : Fragment() {
         auth = Firebase.auth
         db = Firebase.firestore
 
-        var btnlogout=root.findViewById<Button>(R.id.btnlogout)
-        btnlogout.setOnClickListener {
-            logOut()
-            val intent=Intent(requireContext(),MainActivity::class.java)
-            startActivity(intent)
 
-            requireActivity().finish()
-        }
 
     }
 
-    private fun logOut() {
-        auth.signOut()
-        userlocal=null
-    }
+
 
 }

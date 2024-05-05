@@ -51,6 +51,7 @@
         android:layout_marginEnd="32dp"
         android:background="@drawable/background_rounded_corners_edit"
         android:ems="10"
+        android:gravity="center_horizontal|center_vertical"
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView21"
@@ -65,7 +66,8 @@
         android:layout_marginEnd="32dp"
         android:background="@drawable/background_rounded_corners_edit"
         android:ems="10"
-        android:inputType="text"
+        android:gravity="center_horizontal|center_vertical"
+        android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView24"
         app:layout_constraintTop_toBottomOf="@+id/eddnombrecomida" />
@@ -79,7 +81,8 @@
         android:layout_marginEnd="32dp"
         android:background="@drawable/background_rounded_corners_edit"
         android:ems="10"
-        android:inputType="text"
+        android:gravity="center_horizontal|center_vertical"
+        android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView26"
         app:layout_constraintTop_toBottomOf="@+id/eddcantidad" />
