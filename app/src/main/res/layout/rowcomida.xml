@@ -5,13 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    android:background="@drawable/botonesstyle">
+    android:background="@drawable/botonesstyle"
+    android:paddingBottom="16dp">
 
     <TextView
         android:id="@+id/textView23"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="@string/df_Cantidad"
         android:textAlignment="center"
@@ -39,7 +40,7 @@
         android:id="@+id/textView17"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="@string/df_Kcal"
         android:textAlignment="center"
@@ -63,50 +64,45 @@
         app:layout_constraintStart_toEndOf="@+id/textView17"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
+    <TextView
         android:id="@+id/edtcomida"
         android:layout_width="80dp"
         android:layout_height="35dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/background_rounded_corners_edit"
         android:ems="10"
-        android:inputType="text"
-        android:text="Name"
-        android:textAlignment="center"
+        android:gravity="center_horizontal|center_vertical"
+        android:textAllCaps="false"
         android:textColor="#000000"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView22" />
 
-    <EditText
+    <TextView
         android:id="@+id/edtcant"
         android:layout_width="80dp"
         android:layout_height="35dp"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/background_rounded_corners_edit"
         android:ems="10"
-        android:inputType="text"
-        android:text="Name"
+        android:gravity="center_horizontal|center_vertical"
         android:textAlignment="center"
         android:textColor="#000000"
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@+id/edtcomida"
         app:layout_constraintTop_toBottomOf="@+id/textView23" />
 
-    <EditText
+    <TextView
         android:id="@+id/edtkcal"
         android:layout_width="80dp"
         android:layout_height="35dp"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/background_rounded_corners_edit"
         android:ems="10"
-        android:inputType="text"
-        android:text="Name"
+        android:gravity="center_horizontal|center_vertical"
         android:textAlignment="center"
         android:textColor="#000000"
         android:textSize="14sp"
@@ -117,10 +113,26 @@
         android:id="@+id/tvkcalTotales"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:text="TextView"
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/edtkcal"
         app:layout_constraintTop_toBottomOf="@+id/textView20" />
+
+    <Button
+        android:id="@+id/btneliminarcomidadf"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/papelera"
+        android:onClick="onClickEliminar"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edtcant"
+        app:layout_constraintVertical_bias="0.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>

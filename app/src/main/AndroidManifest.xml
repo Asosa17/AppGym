@@ -17,6 +17,7 @@
         android:roundIcon="@mipmap/ic_appgym_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TemaApp1"
+        android:screenOrientation="portrait"
         tools:targetApi="31">
         <activity
             android:name=".view.MainActivity"
@@ -29,6 +30,8 @@
             </intent-filter>
         </activity>
         <activity
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize"
             android:name="net.azarquiel.appgym.view.PrincipalActivity"
             android:label="Detalles del Usuario">
         </activity>

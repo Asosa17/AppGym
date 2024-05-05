@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
@@ -14,7 +15,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import net.azarquiel.appgym.R
+import net.azarquiel.appgym.adapters.ComidaAdapter
 import net.azarquiel.appgym.databinding.ActivityMainBinding
+import net.azarquiel.appgym.model.Comida
 import net.azarquiel.appgym.ui.LoginFragment
 import net.azarquiel.appgym.ui.UserCompleteFragment
 import java.util.Locale
@@ -62,6 +65,7 @@ class MainActivity : AppCompatActivity() {
         config.setLocale(locale)
 
     }
+
     private fun detectatema(tema:String){
         val tema = tema.toInt()
         when(tema){
