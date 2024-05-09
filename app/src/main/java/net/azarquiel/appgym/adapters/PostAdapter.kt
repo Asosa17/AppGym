@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import net.azarquiel.appgym.R
 import net.azarquiel.appgym.model.Post
 
@@ -42,11 +43,12 @@ class PostAdapter (val context: Context,
             // itemview es el item de diseño
             // al que hay que poner los datos del objeto dataItem
             val ivpost = itemView.findViewById(R.id.ivpost) as ImageView
+            Picasso.get().load(dataItem.Foto).into(ivpost)
 
             val tvpiepost = itemView.findViewById(R.id.tvpiepost) as TextView
             tvpiepost.setText(dataItem.PieComent)
             val tvcountlikes = itemView.findViewById(R.id.tvcountlikes) as TextView
-            tvcountlikes.setText(dataItem.Likes)
+            tvcountlikes.setText(dataItem.Likes.count().toString())
 
             val btnlike = itemView.findViewById(R.id.btnlike) as ImageView
             val btncoment = itemView.findViewById(R.id.btncoment) as ImageView

@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +15,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import net.azarquiel.appgym.R
 import net.azarquiel.appgym.databinding.ActivityPricipalBinding
@@ -48,21 +51,25 @@ class PrincipalActivity : AppCompatActivity() {
 
         setInitialFragment()
 
-        binding.navView.setOnItemSelectedListener {
-            when (it.itemId){
-                R.id.navigation_home -> replaceFragment(HomeFragment())
-                R.id.navigation_rutinas -> replaceFragment(RutinasFragment())
-                R.id.navigation_chat -> replaceFragment(ChatFragment())
-                R.id.navigation_dietas -> replaceFragment(DietasFragment())
-                R.id.navigation_ajustes -> replaceFragment(AjustesFragment())
-
-                else ->{
-
+        binding.navView.setOnItemSelectedListener { item ->
+            if (item.itemId != binding.navView.selectedItemId) {
+                when (item.itemId) {
+                    R.id.navigation_home -> replaceFragment(HomeFragment())
+                    R.id.navigation_rutinas -> replaceFragment(RutinasFragment())
+                    R.id.navigation_chat -> replaceFragment(ChatFragment())
+                    R.id.navigation_dietas -> replaceFragment(DietasFragment())
+                    R.id.navigation_ajustes -> replaceFragment(AjustesFragment())
                 }
-
             }
             true
         }
+
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                binding.navView.selectedItemId=R.id.navigation_home
+            }
+        })
 
     }
 
@@ -89,7 +96,7 @@ class PrincipalActivity : AppCompatActivity() {
         fragmentTransaction.add(R.id.FrameLayout, fragment)
         fragmentTransaction.commit()
     }
-    private fun replaceFragment(fragment: Fragment) {
+    fun replaceFragment(fragment: Fragment) {
         val fragmentManager=supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.FrameLayout, fragment)

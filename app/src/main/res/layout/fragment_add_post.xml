@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/fondoajustes"
-    app:context=".ui.AddPostFragment" >
+    android:fitsSystemWindows="false"
+    tools:context=".ui.AddPostFragment">
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -28,7 +29,7 @@
             android:layout_weight="1"
             android:background="@drawable/botonesstyle"
             android:padding="10dp"
-            android:text="Cancelar"
+            android:text="@string/cf_btncancelar"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
@@ -42,7 +43,7 @@
             android:layout_weight="1"
             android:background="@drawable/botonesstyle"
             android:padding="10dp"
-            android:text="Publicar"
+            android:text="@string/cf_publicar"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
@@ -83,9 +84,9 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="32dp"
-            android:layout_marginEnd="32dp"
+            android:layout_marginEnd="24dp"
             android:layout_marginBottom="32dp"
             android:background="@drawable/botonesstyle"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -106,12 +107,14 @@
             <EditText
                 android:id="@+id/edappiecoment"
                 android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/background_rounded_corners_edit"
                 android:ems="10"
-                android:hint="Escribe aquí tu pie de foto"
-                android:inputType="text"
+                android:gravity="top"
+                android:hint="@string/cf_hintPieComment"
+                android:inputType="textMultiLine"
                 android:maxLines="4"
                 android:padding="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"

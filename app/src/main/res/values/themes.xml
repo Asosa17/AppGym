@@ -36,4 +36,17 @@
     <style name="ThemeOverlay.App.fab" parent="ThemeOverlay.Material3.FloatingActionButton.Primary">
         <item name="shapeAppearance">@drawable/fabdesign</item>
     </style>
+
+    <style name="DialogTheme" >
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:navigationBarColor">@color/black</item>
+        <item name="android:windowAnimationStyle">@style/YourAnimationStyle</item>
+    </style>
+
+    <style name="YourAnimationStyle">
+        <item name="android:windowEnterAnimation">@anim/slide_in</item>
+        <item name="android:windowExitAnimation">@anim/slide_out</item>
+    </style>
 </resources>

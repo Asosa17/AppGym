@@ -190,7 +190,7 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
                                     binding.tvkcaltotalessuma.text="%.2f".format(suma).replace(".", ",")
                                     adapter.notifyDataSetChanged()
                                     adapter.setComidas(comidas)
-                                    Toast.makeText(requireContext(),"No exiten registros para este dia",Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(requireContext(),R.string.df_toastSinRegistros,Toast.LENGTH_SHORT).show()
                                 }
                             }
 
@@ -222,7 +222,7 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
 
         btnaceptarcomida.setOnClickListener {
             if (eddnombrecomida.text.toString().equals("")||eddcantidad.text.toString().equals("")||eddkcal100.text.toString().equals("")){
-                Toast.makeText(requireContext(),"Rellene los campos",Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.df_relleneCampos,Toast.LENGTH_SHORT).show()
             }else{
                 var cantidaddialog= eddcantidad.text.toString()
                 var kcal100dialog=eddkcal100.text.toString()
@@ -279,7 +279,7 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
                                     userDocument.update("comidas", comidasMapa)
                                         .addOnSuccessListener {
                                             // La comida se eliminó correctamente de Firebase
-                                            Toast.makeText(requireContext(), "Comida eliminada correctamente", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(requireContext(),  R.string.df_comidaeliminada, Toast.LENGTH_SHORT).show()
                                         }
                                         .addOnFailureListener { exception ->
                                             // Manejar errores al eliminar la comida de Firebase
@@ -294,7 +294,7 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
                         Log.e("DietasFragment", "Error al obtener comidas del usuario", exception)
                     }
             }
-         }
+        }
     }
     private fun guardarcomida(comida:Comida,cont:Int) {
         val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -333,7 +333,7 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
                                 userDocument.update("comidas", comidasMapa)
                                     .addOnSuccessListener {
                                         // La comida se guardó exitosamente
-                                        Toast.makeText(requireContext(), "Comida guardada correctamente", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(requireContext(), R.string.df_comidaguardada, Toast.LENGTH_SHORT).show()
                                     }
                                     .addOnFailureListener { exception ->
                                         // Manejar errores al guardar la comida

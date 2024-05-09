@@ -46,4 +46,13 @@
     <string name="df_KcalComida">Kcal</string>
     <string name="df_btnAñaComida">Añadir Comida</string>
     <string name="df_kcaltotalessuma">Kcal totales:</string>
+    <string name="cf_hintPieComment">Escribe aquí tu descripción</string>
+    <string name="cf_btncancelar">Cancelar</string>
+    <string name="cf_publicar">Publicar</string>
+    <string name="cf_comentarios">Comentarios</string>
+    <string name="cf_hinted">Escriba aquí su comentario</string>
+    <string name="df_toastSinRegistros">No exiten registros para este dia</string>
+    <string name="df_relleneCampos">Rellene los campos</string>
+    <string name="df_comidaeliminada">"Comida eliminada correctamente "</string>
+    <string name="df_comidaguardada">Comida guardada correctamente</string>
 </resources>

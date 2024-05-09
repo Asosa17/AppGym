@@ -257,7 +257,6 @@ class AjustesFragment : Fragment() {
         editor.apply()
     }
 
-
     private fun expandir(id:Int, visibility: Int) {
         val newVisibility = if (visibility == View.VISIBLE) {
             View.GONE // Si está visible, lo hacemos invisible
@@ -291,32 +290,25 @@ class AjustesFragment : Fragment() {
                 clajustes=binding.clajsutes4
             }
         }
-
         // Variable para mantener el estado actual de la animación
         val layoutParams = datos.layoutParams as ConstraintLayout.LayoutParams
         //Cambiar visibilidad del contenido al cerrar o abrir
         cambiarVisibilidadConRetraso(clajustes, newVisibility)
-
         // Altura inicial y final
-
         //val startHeight = datos.height
         val endHeight = if (isExpanded) startHeight else startHeight+250
 
         val duration = 800L // Duración de la animación en milisegundos
-
         // Crear un ValueAnimator para cambiar la altura del ConstraintLayout
         if (isExpanded){
             animator = ValueAnimator.ofInt(startHeight2+43, endHeight)
-
         }else{
             animator = ValueAnimator.ofInt(startHeight, endHeight)
         }
         animator.duration = duration
-
         // Cambiar la rotación de la flecha
         val rotation = if (isExpanded) -90f else 0f
         flecha.animate().rotation(rotation).start()
-
         // Actualizar la altura del ConstraintLayout durante la animación
         animator.addUpdateListener { animation ->
             val animatedValue = animation.animatedValue as Int
