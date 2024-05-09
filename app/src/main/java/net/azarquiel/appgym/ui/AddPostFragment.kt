@@ -1,12 +1,16 @@
 import android.Manifest
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -23,25 +27,38 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.azarquiel.appgym.R
+import net.azarquiel.appgym.adapters.PostAdapter
 import net.azarquiel.appgym.databinding.FragmentAddPostBinding
 import net.azarquiel.appgym.databinding.FragmentChatBinding
 import net.azarquiel.appgym.model.Comentario
 import net.azarquiel.appgym.model.Comida
 import net.azarquiel.appgym.model.Post
+import net.azarquiel.appgym.ui.ChatFragment
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class AddPostFragment : DialogFragment() {
+class AddPostFragment(val Chat:ChatFragment) : DialogFragment() {
 
+    private var postschat: MutableList<Post> = Chat.posts
+    private var UriTemp: Uri? = null
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var binding: FragmentAddPostBinding
     private lateinit var auth: FirebaseAuth
@@ -53,12 +70,11 @@ class AddPostFragment : DialogFragment() {
     private lateinit var formattedDate2: String
     private var email: String? = null
     private lateinit var coment: String
-    private lateinit var foto: Drawable
+    private  var foto:String = ""
     private lateinit var btnCamara: Button
     private lateinit var btnGalery: Button
     private val CAMERA_PERMISSION_REQUEST_CODE = 100
     private lateinit var launcherImage : ActivityResultLauncher<Intent>
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -81,15 +97,13 @@ class AddPostFragment : DialogFragment() {
         val currentDate = Calendar.getInstance().time
         val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         formattedDate = sdf.format(currentDate)
+        email = datosUserSH.getString("email", "")
 
         binding.btnpublicaraddpost.setOnClickListener {
-            foto = binding.ivapfotopost.drawable
             coment = binding.edappiecoment.text.toString()
-            email = datosUserSH.getString("email", "")
             val sdf2 = SimpleDateFormat("ddMMyyyy", Locale.getDefault())
             formattedDate2 = sdf2.format(currentDate)
-            post = Post(foto.toString(), mutableListOf(), mutableListOf(), coment, email.toString(), formattedDate," " )
-
+            post = Post(foto, mutableListOf(), mutableListOf(), coment, email.toString(), formattedDate,"" )
 
             newDocument["Likes"] = post.Likes
             newDocument["Comentarios"] = post.Comentarios
@@ -97,10 +111,20 @@ class AddPostFragment : DialogFragment() {
             newDocument["Usuario"] = post.Usuario
             newDocument["Fecha"] = post.Fecha
 
-
             publicarPost()
             publicarPostTotales()
-            dismiss()
+
+            if (post.Foto.isNotBlank()&&post.PieComent.isNotBlank()){
+                GlobalScope.launch {
+                    delay(1000)
+                    withContext(Dispatchers.Main) {
+                        Chat.refresh(postschat)
+                        dismiss()
+                    }
+                }
+            }
+
+
         }
         binding.btncancelaraddpost.setOnClickListener {
             dismiss()
@@ -127,11 +151,23 @@ class AddPostFragment : DialogFragment() {
                             postid = "post0"+"${(collection.count()+1)}"+"_${email}"
                         }
                         newDocument["id"] = postid
-                        posts.document(postid).set(newDocument)
+                        if (post.Foto.isBlank()||post.PieComent.isBlank()){
+                            Toast.makeText(requireContext(),"Termine el post para publicar",Toast.LENGTH_SHORT).show()
+                        }else{
+                            posts.document(postid).set(newDocument)
+                        }
+                        post.id=postid
+                        postschat.add(0,post)
                     }else{
                         val postid = "post01"+"_${email}"
                         newDocument["id"] = postid
-                        posts.document(postid).set(newDocument)
+                        if (post.Foto.isBlank()||post.PieComent.isBlank()){
+                            Toast.makeText(requireContext(),"Termine el post para publicar",Toast.LENGTH_SHORT).show()
+                        }else{
+                            posts.document(postid).set(newDocument)
+                        }
+                        post.id=postid
+                        postschat.add(0,post)
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -155,11 +191,15 @@ class AddPostFragment : DialogFragment() {
                             postid = "post0"+"${(collection.count()+1)}"+"_${email}"
                         }
                         newDocument["id"] = postid
-                        postsTotales.document(postid).set(newDocument)
+                        if (post.Foto.isNotBlank()&&post.PieComent.isNotBlank()){
+                            postsTotales.document(postid).set(newDocument)
+                        }
                     }else{
                         val postid = "post01"+"_${email}"
                         newDocument["id"] = postid
-                        postsTotales.document(postid).set(newDocument)
+                        if (post.Foto.isNotBlank()&&post.PieComent.isNotBlank()){
+                            postsTotales.document(postid).set(newDocument)
+                        }
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -196,29 +236,28 @@ class AddPostFragment : DialogFragment() {
             dispatchTakePictureIntent()
         }
     }
-    private fun uploadImage(imageUri: Uri) {
+    private fun uploadImage(imageUri: Uri?) {
         val sdf = SimpleDateFormat("yyyy_M_dd_HH_mm_ss", Locale.getDefault())
         val now = Date()
         val filename = sdf.format(now)
-        val storageReference = FirebaseStorage.getInstance().getReference("FotosUsers/$filename ${email}")
-        storageReference.putFile(imageUri)
+        val storageReference = FirebaseStorage.getInstance().getReference("posts/$filename ${email}")
+        storageReference.putFile(imageUri!!)
             .addOnSuccessListener { taskSnapshot ->
                 storageReference.downloadUrl.addOnSuccessListener { uri ->
                     newDocument["Foto"] = uri.toString()
+                    foto = uri.toString()
                 }
             }
             .addOnFailureListener { e ->
                 msg("Error al subir la imagen: ${e.message}")
             }
     }
-
     private fun selectImage() {
         val intent = Intent()
         intent.type = "image/*"
         intent.action = Intent.ACTION_GET_CONTENT
         launcherImage.launch(intent)
     }
-
     private fun onResultImage() {
         launcherImage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == AppCompatActivity.RESULT_OK) {
@@ -230,20 +269,77 @@ class AddPostFragment : DialogFragment() {
                     }
                 }
             }
+            // Si la captura de imagen es exitosa
+            if (result.data?.extras?.containsKey("data") == true) {
+                // Obtener la imagen capturada como bitmap
+                val imageBitmap = result.data?.extras?.get("data") as Bitmap
+                // Establecer la imagen capturada en el ImageView
+                binding.ivapfotopost.setImageBitmap(imageBitmap)
+                // Obtener la URI de la imagen capturada
+                saveBitmapImage(imageBitmap)
+                val tempUri = UriTemp
+                // Subir la imagen a Firebase
+                uploadImage(tempUri)
+                // Cerrar el diálogo
+                bottomSheetDialog.dismiss()
+            }
         }
     }
-
     private fun msg(s: String) {
 
     }
-
-    private fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
-        val bytes = ByteArrayOutputStream()
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val path = MediaStore.Images.Media.insertImage(inContext.contentResolver, inImage, "Title", null)
-        return Uri.parse(path)
+    private fun saveBitmapImage(bitmap: Bitmap) {
+        val timestamp = System.currentTimeMillis()
+        val values = ContentValues()
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+        values.put(MediaStore.Images.Media.DATE_ADDED, timestamp)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            values.put(MediaStore.Images.Media.DATE_TAKEN, timestamp)
+            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/" + getString(R.string.app_name))
+            values.put(MediaStore.Images.Media.IS_PENDING, true)
+            val uri = requireActivity().contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+            if (uri != null) {
+                try {
+                    val outputStream = requireActivity().contentResolver.openOutputStream(uri)
+                    if (outputStream != null) {
+                        try {
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                            outputStream.close()
+                        } catch (e: Exception) {
+                            Log.e(ContentValues.TAG, "saveBitmapImage: ", e)
+                        }
+                    }
+                    values.put(MediaStore.Images.Media.IS_PENDING, false)
+                    requireActivity().contentResolver.update(uri, values, null, null)
+                    UriTemp=uri
+                    Toast.makeText(requireContext(), "Saved...", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    Log.e(ContentValues.TAG, "saveBitmapImage: ", e)
+                }
+            }
+        } else {
+            val imageFileFolder = File(Environment.getExternalStorageDirectory().toString() + '/' + getString(R.string.app_name))
+            if (!imageFileFolder.exists()) {
+                imageFileFolder.mkdirs()
+            }
+            val mImageName = "$timestamp.png"
+            val imageFile = File(imageFileFolder, mImageName)
+            try {
+                val outputStream: OutputStream = FileOutputStream(imageFile)
+                try {
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                    outputStream.close()
+                } catch (e: Exception) {
+                    Log.e(ContentValues.TAG, "saveBitmapImage: ", e)
+                }
+                values.put(MediaStore.Images.Media.DATA, imageFile.absolutePath)
+                requireActivity().contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                Toast.makeText(requireContext(), "Saved...", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Log.e(ContentValues.TAG, "saveBitmapImage: ", e)
+            }
+        }
     }
-
     private fun dispatchTakePictureIntent() {
         // Creamos un intent para capturar una imagen
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -253,4 +349,5 @@ class AddPostFragment : DialogFragment() {
             launcherImage.launch(takePictureIntent)
         }
     }
+
 }

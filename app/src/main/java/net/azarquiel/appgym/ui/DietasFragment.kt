@@ -20,6 +20,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.azarquiel.appgym.R
 import net.azarquiel.appgym.adapters.ComidaAdapter
 import net.azarquiel.appgym.databinding.FragmentDietasBinding
@@ -32,6 +37,7 @@ import java.util.Locale
 
 class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
 
+    private  var cb: Boolean = false
     private var cont: Int = 0
     private lateinit var datosUserSH: SharedPreferences
     private lateinit var btnaceptarcomida: Button
@@ -135,9 +141,16 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
             selectedDate = calendar.time
             updateSelectedDateTextView(selectedDate!!)
             obtenerComidasDelDia(selectedDate!!)
+            GlobalScope.launch {
+                delay(500)
+                withContext(Dispatchers.Main) {
+                    if (!cb){Toast.makeText(requireContext(),R.string.df_toastSinRegistros,Toast.LENGTH_SHORT).show()}
+                }
+            }
             comidas.clear()
             cont=0
             suma=0F
+
         }
 
         materialDatePicker.show(requireActivity().supportFragmentManager, "DatePickerDialogTag")
@@ -167,6 +180,7 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
                             if (comidasMapa != null) {
                                 val comidasFecha = comidasMapa[fechaFormateada] as Map<String, Any>?
                                 if (comidasFecha!=null){
+                                    cb=true
                                     comidasFecha.forEach { (_, datosComida) ->
                                         val comida = datosComida as Map<String, Any>
                                         val nombreComida = comida["NombreComida"] as String
@@ -185,12 +199,12 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
                                     adapter.notifyDataSetChanged()
                                     adapter.setComidas(comidas)
                                 }else {
+                                    cb=false
                                     comidas.clear()
                                     suma=0F
                                     binding.tvkcaltotalessuma.text="%.2f".format(suma).replace(".", ",")
                                     adapter.notifyDataSetChanged()
                                     adapter.setComidas(comidas)
-                                    Toast.makeText(requireContext(),R.string.df_toastSinRegistros,Toast.LENGTH_SHORT).show()
                                 }
                             }
 

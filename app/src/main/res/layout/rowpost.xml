@@ -19,9 +19,10 @@
 
         <ImageView
             android:id="@+id/ivpost"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:layout_marginTop="50dp"
+            android:layout_width="320dp"
+            android:layout_height="320dp"
+            android:layout_marginTop="32dp"
+            android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

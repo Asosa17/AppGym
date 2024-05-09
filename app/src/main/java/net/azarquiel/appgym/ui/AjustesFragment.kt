@@ -76,6 +76,7 @@ import java.util.Date
 import java.util.Locale
 
 class AjustesFragment : Fragment() {
+    private lateinit var UriTemp: Uri
     private lateinit var tvpesouser: TextView
     private lateinit var tvAlturauser: TextView
     private lateinit var UserLocal: User
@@ -145,7 +146,44 @@ class AjustesFragment : Fragment() {
 
         onResultImage()
     }
+    private fun getUser() {
+        val currentUser = auth.currentUser
+        userlocal = currentUser!!
+        if (userlocal != null) {
+            val userDocument = userlocal?.email?.let { db.collection("users").document(it) }
+            userDocument!!.get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val altura = document.getString("altura") ?: ""
+                        tvAlturauser.text = Editable.Factory.getInstance().newEditable(altura)
+                        // Obtener el mapa de pesos del documento si existe
+                        val pesoMap = document["peso"] as? Map<String, Any>
+                        if (pesoMap != null) {
+                            val keys = pesoMap.keys.sortedDescending()
+                            val lastKey = keys.firstOrNull()
+                            if (lastKey != null) {
+                                val lastPeso = pesoMap[lastKey].toString()
+                                tvpesouser.text = Editable.Factory.getInstance().newEditable(lastPeso)
+                            } else {
+                                // No hay ningún peso registrado
+                                tvpesouser.text = Editable.Factory.getInstance().newEditable("")
+                            }
+                        } else {
+                            // No hay datos de peso en Firebase
+                            tvpesouser.text = Editable.Factory.getInstance().newEditable("")
+                        }
+                    } else {
 
+                    }
+                }
+                .addOnFailureListener { e ->
+                    // Maneja cualquier error que pueda ocurrir al realizar la consulta
+                    Log.w(ContentValues.TAG, "Error al obtener datos del usuario: ", e)
+                }
+        } else {
+            // El usuario no está autenticado, maneja esta situación según tus requerimientos
+        }
+    }
     private fun allOnclicks() {
         binding.IvUserAvatar.setOnClickListener {
             if (userlocal != null) {
@@ -204,6 +242,48 @@ class AjustesFragment : Fragment() {
         }
         binding.ivtemaverde.setOnClickListener{
             cambiartema(3)
+        }
+    }
+    private fun guardarStats() {
+        if (tvAlturauser.text.toString().isEmpty() || tvpesouser.text.toString().isEmpty()) {
+            Toast.makeText(requireActivity(), "Rellena bien los campos", Toast.LENGTH_LONG).show()
+            return
+        }
+        // Obtener la fecha actual en el formato deseado (por ejemplo, "2022-01-01")
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val tvAlturauser = tvAlturauser.text.toString()
+        val tvpesouser = tvpesouser.text.toString()
+        // Obtener el documento actual del usuario
+        val userDocumentRef = db.collection("users").document(email)
+        userDocumentRef.get().addOnSuccessListener { documentSnapshot ->
+            if (documentSnapshot.exists()) {
+                // Obtener el mapa de pesos actual
+                val pesoMap = documentSnapshot.data?.get("peso") as? MutableMap<String, Any> ?: HashMap()
+
+                // Agregar el nuevo peso al mapa
+                pesoMap[currentDate] = tvpesouser
+
+                // Actualizar la colección "users" en Firestore con la altura y el mapa de pesos actualizado
+                val dataToUpdate: MutableMap<String, Any> = HashMap()
+                dataToUpdate["altura"] = tvAlturauser
+                dataToUpdate["peso"] = pesoMap
+
+                // Actualizar el documento en Firestore
+                userDocumentRef.update(dataToUpdate)
+                    .addOnSuccessListener {
+                        Toast.makeText(requireContext(), "Datos guardados", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("TAG", "Error al actualizar el documento", e)
+                        Toast.makeText(requireContext(), "Error al guardar los datos", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                Log.d("TAG", "El documento del usuario no existe")
+                Toast.makeText(requireContext(), "El usuario no existe", Toast.LENGTH_SHORT).show()
+            }
+        }.addOnFailureListener { e ->
+            Log.w("TAG", "Error al obtener el documento del usuario", e)
+            Toast.makeText(requireContext(), "Error al obtener los datos del usuario", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -413,88 +493,6 @@ class AjustesFragment : Fragment() {
             dispatchTakePictureIntent()
         }
     }
-
-    private fun getUser() {
-        val currentUser = auth.currentUser
-        userlocal = currentUser!!
-        if (userlocal != null) {
-            val userDocument = userlocal?.email?.let { db.collection("users").document(it) }
-            userDocument!!.get()
-                .addOnSuccessListener { document ->
-                    if (document.exists()) {
-                        val altura = document.getString("altura") ?: ""
-                        tvAlturauser.text = Editable.Factory.getInstance().newEditable(altura)
-                        // Obtener el mapa de pesos del documento si existe
-                        val pesoMap = document["peso"] as? Map<String, Any>
-                        if (pesoMap != null) {
-                            val keys = pesoMap.keys.sortedDescending()
-                            val lastKey = keys.firstOrNull()
-                            if (lastKey != null) {
-                                val lastPeso = pesoMap[lastKey].toString()
-                                tvpesouser.text = Editable.Factory.getInstance().newEditable(lastPeso)
-                            } else {
-                                // No hay ningún peso registrado
-                                tvpesouser.text = Editable.Factory.getInstance().newEditable("")
-                            }
-                        } else {
-                            // No hay datos de peso en Firebase
-                            tvpesouser.text = Editable.Factory.getInstance().newEditable("")
-                        }
-                    } else {
-
-                    }
-                }
-                .addOnFailureListener { e ->
-                    // Maneja cualquier error que pueda ocurrir al realizar la consulta
-                    Log.w(ContentValues.TAG, "Error al obtener datos del usuario: ", e)
-                }
-        } else {
-            // El usuario no está autenticado, maneja esta situación según tus requerimientos
-        }
-    }
-    private fun guardarStats() {
-        if (tvAlturauser.text.toString().isEmpty() || tvpesouser.text.toString().isEmpty()) {
-            Toast.makeText(requireActivity(), "Rellena bien los campos", Toast.LENGTH_LONG).show()
-            return
-        }
-        // Obtener la fecha actual en el formato deseado (por ejemplo, "2022-01-01")
-        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        val tvAlturauser = tvAlturauser.text.toString()
-        val tvpesouser = tvpesouser.text.toString()
-        // Obtener el documento actual del usuario
-        val userDocumentRef = db.collection("users").document(email)
-        userDocumentRef.get().addOnSuccessListener { documentSnapshot ->
-            if (documentSnapshot.exists()) {
-                // Obtener el mapa de pesos actual
-                val pesoMap = documentSnapshot.data?.get("peso") as? MutableMap<String, Any> ?: HashMap()
-
-                // Agregar el nuevo peso al mapa
-                pesoMap[currentDate] = tvpesouser
-
-                // Actualizar la colección "users" en Firestore con la altura y el mapa de pesos actualizado
-                val dataToUpdate: MutableMap<String, Any> = HashMap()
-                dataToUpdate["altura"] = tvAlturauser
-                dataToUpdate["peso"] = pesoMap
-
-                // Actualizar el documento en Firestore
-                userDocumentRef.update(dataToUpdate)
-                    .addOnSuccessListener {
-                        Toast.makeText(requireContext(), "Datos guardados", Toast.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener { e ->
-                        Log.w("TAG", "Error al actualizar el documento", e)
-                        Toast.makeText(requireContext(), "Error al guardar los datos", Toast.LENGTH_SHORT).show()
-                    }
-            } else {
-                Log.d("TAG", "El documento del usuario no existe")
-                Toast.makeText(requireContext(), "El usuario no existe", Toast.LENGTH_SHORT).show()
-            }
-        }.addOnFailureListener { e ->
-            Log.w("TAG", "Error al obtener el documento del usuario", e)
-            Toast.makeText(requireContext(), "Error al obtener los datos del usuario", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     private fun uploadImage(imageUri: Uri) {
         val sdf = SimpleDateFormat("yyyy_M_dd_HH_mm_ss", Locale.getDefault())
         val now = Date()
@@ -522,14 +520,12 @@ class AjustesFragment : Fragment() {
                 msg("Error al subir la imagen: ${e.message}")
             }
     }
-
     private fun selectImage() {
         val intent = Intent()
         intent.type = "image/*"
         intent.action = Intent.ACTION_GET_CONTENT
         launcherImage.launch(intent)
     }
-
     private fun onResultImage() {
         launcherImage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == AppCompatActivity.RESULT_OK) {
@@ -547,8 +543,9 @@ class AjustesFragment : Fragment() {
                 val imageBitmap = result.data?.extras?.get("data") as Bitmap
                 // Establecer la imagen capturada en el ImageView
                 binding.IvUserAvatar.setImageBitmap(imageBitmap)
+                saveBitmapImage(imageBitmap)
                 // Obtener la URI de la imagen capturada
-                val tempUri = getImageUri(requireContext(), imageBitmap)
+                val tempUri = UriTemp
                 // Subir la imagen a Firebase
                 uploadImage(tempUri)
                 // Cerrar el diálogo
@@ -560,14 +557,58 @@ class AjustesFragment : Fragment() {
     private fun msg(s: String) {
 
     }
-
-    private fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
-        val bytes = ByteArrayOutputStream()
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val path = MediaStore.Images.Media.insertImage(inContext.contentResolver, inImage, "Title", null)
-        return Uri.parse(path)
+    private fun saveBitmapImage(bitmap: Bitmap) {
+        val timestamp = System.currentTimeMillis()
+        val values = ContentValues()
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+        values.put(MediaStore.Images.Media.DATE_ADDED, timestamp)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            values.put(MediaStore.Images.Media.DATE_TAKEN, timestamp)
+            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/" + getString(R.string.app_name))
+            values.put(MediaStore.Images.Media.IS_PENDING, true)
+            val uri = requireActivity().contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+            if (uri != null) {
+                try {
+                    val outputStream = requireActivity().contentResolver.openOutputStream(uri)
+                    if (outputStream != null) {
+                        try {
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                            outputStream.close()
+                        } catch (e: Exception) {
+                            Log.e(TAG, "saveBitmapImage: ", e)
+                        }
+                    }
+                    values.put(MediaStore.Images.Media.IS_PENDING, false)
+                    requireActivity().contentResolver.update(uri, values, null, null)
+                    UriTemp=uri
+                    Toast.makeText(requireContext(), "Saved...", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    Log.e(TAG, "saveBitmapImage: ", e)
+                }
+            }
+        } else {
+            val imageFileFolder = File(Environment.getExternalStorageDirectory().toString() + '/' + getString(R.string.app_name))
+            if (!imageFileFolder.exists()) {
+                imageFileFolder.mkdirs()
+            }
+            val mImageName = "$timestamp.png"
+            val imageFile = File(imageFileFolder, mImageName)
+            try {
+                val outputStream: OutputStream = FileOutputStream(imageFile)
+                try {
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                    outputStream.close()
+                } catch (e: Exception) {
+                    Log.e(TAG, "saveBitmapImage: ", e)
+                }
+                values.put(MediaStore.Images.Media.DATA, imageFile.absolutePath)
+                requireActivity().contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                Toast.makeText(requireContext(), "Saved...", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Log.e(TAG, "saveBitmapImage: ", e)
+            }
+        }
     }
-
     private fun dispatchTakePictureIntent() {
         // Creamos un intent para capturar una imagen
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -583,6 +624,4 @@ class AjustesFragment : Fragment() {
         editor.putString("imageUrl", imageUrl)
         editor.commit()
     }
-
-
 }

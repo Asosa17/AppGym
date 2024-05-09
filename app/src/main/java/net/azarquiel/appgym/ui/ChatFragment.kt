@@ -40,7 +40,7 @@ class ChatFragment : Fragment(), PostAdapter.OnClickListenerRecycler  {
     private lateinit var edcomentdialog: EditText
     private lateinit var adaptercoments: ComentarioAdapter
     private lateinit var rvcomentarios: MutableList<Comentario>
-    private lateinit var posts: MutableList<Post>
+    public lateinit var posts: MutableList<Post>
     private lateinit var datosUserSH: SharedPreferences
     private lateinit var adapter:  PostAdapter
     private lateinit var binding: FragmentChatBinding
@@ -80,7 +80,7 @@ class ChatFragment : Fragment(), PostAdapter.OnClickListenerRecycler  {
         formattedDate = sdf.format(currentDate)
         obtenerPost(formattedDate)
         binding.fabaAdirpost.setOnClickListener {
-            val addPostFragment = AddPostFragment()
+            val addPostFragment = AddPostFragment(this)
             addPostFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogTheme)
             addPostFragment.show(childFragmentManager, "AddPostFragment.TAG")
         }
@@ -120,15 +120,17 @@ class ChatFragment : Fragment(), PostAdapter.OnClickListenerRecycler  {
             currentUser?.let { user ->
                 val userEmail = user.email
                 userEmail?.let { email ->
-                    val postdb=db.collection("postsTotales").document(post.id)
-                    postdb.get()
+                    val postdb=db.collection("posts").document(formattedDate).collection("posts").document(post.id)
+                    val postTotalesdb=db.collection("postsTotales").document(post.id)
+                    postTotalesdb.get()
                         .addOnSuccessListener { document ->
                             val likes = document["Likes"] as  List<String>
                             likes?.let {
                                 if (it.contains(email)) {
                                     val updatedLikes = it.toMutableList()
                                     updatedLikes.remove(email)
-                                    postdb.update("Likes", updatedLikes)
+                                    postdb.update("Likes",updatedLikes)
+                                    postTotalesdb.update("Likes", updatedLikes)
                                         .addOnSuccessListener {
                                             post.Likes.remove(email)
                                             adapter.notifyDataSetChanged()
@@ -138,7 +140,8 @@ class ChatFragment : Fragment(), PostAdapter.OnClickListenerRecycler  {
                                 }else{
                                     val updatedLikes = it.toMutableList()
                                     updatedLikes.add(email)
-                                    postdb.update("Likes", updatedLikes)
+                                    postdb.update("Likes",updatedLikes)
+                                    postTotalesdb.update("Likes", updatedLikes)
                                         .addOnSuccessListener {
                                             post.Likes.add(email)
                                             adapter.notifyDataSetChanged()
@@ -232,7 +235,6 @@ class ChatFragment : Fragment(), PostAdapter.OnClickListenerRecycler  {
                         it?.let {
                             documentToList(it.documents)
                             posts.reverse()
-                            posts.shuffle()
                             adapter.setPosts(posts)
                             adapter.notifyDataSetChanged()
                         }
@@ -270,5 +272,13 @@ class ChatFragment : Fragment(), PostAdapter.OnClickListenerRecycler  {
             rvcomentarios.add(comentario)
         }
     }
+
+    fun refresh(posts:MutableList<Post>) {
+
+        adapter.setPosts(posts)
+        adapter.notifyDataSetChanged()
+        binding.rvchat.smoothScrollToPosition(0)
+    }
+
 
 }
