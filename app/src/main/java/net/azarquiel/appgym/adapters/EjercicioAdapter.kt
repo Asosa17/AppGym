@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.squareup.picasso.Picasso
 import net.azarquiel.appgym.R
 import net.azarquiel.appgym.model.Ejercicio
@@ -50,9 +51,8 @@ class EjercicioAdapter (val context: Context,
             val tvnombreej = itemView.findViewById(R.id.tvnombreej) as TextView
             tvnombreej.setText(dataItem.NombreEj)
             val ivfotoej = itemView.findViewById(R.id.ivfotoej) as ImageView
-            Picasso.get().load(dataItem.Foto).into(ivfotoej)
+            Glide.with(context).load(dataItem.Foto).into(ivfotoej)
             val btneliminarej=itemView.findViewById<Button>(R.id.btneliminarej) as Button
-
             itemView.tag = dataItem
             itemView.setOnClickListener { listener.OnClickEj(dataItem) }
             btneliminarej.setOnClickListener { listener.OnClickEliminarEj(itemView) }

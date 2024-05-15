@@ -157,15 +157,27 @@
         </LinearLayout>
     </HorizontalScrollView>
 
+    <SearchView
+        android:id="@+id/searchViewejs"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:background="@drawable/botonesstyle"
+        android:paddingStart="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvaddejs"
         android:layout_width="0dp"
-        android:layout_height="371dp"
-        android:layout_marginBottom="136dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchViewejs" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
