@@ -49,13 +49,15 @@ class PostAdapter (val context: Context,
             tvpiepost.setText(dataItem.PieComent)
             val tvcountlikes = itemView.findViewById(R.id.tvcountlikes) as TextView
             tvcountlikes.setText(dataItem.Likes.count().toString())
+            var tvcontcoments = itemView.findViewById(R.id.tvcontcoments) as TextView
+            tvcontcoments.setText(dataItem.Comentarios.count().toString())
 
             val btnlike = itemView.findViewById(R.id.btnlike) as ImageView
             val btncoment = itemView.findViewById(R.id.btncoment) as ImageView
 
             itemView.tag = dataItem
             btnlike.setOnClickListener { listener.onClickLike(itemView) }
-            btncoment.setOnClickListener { listener.onClickComment(itemView) }
+            btncoment.setOnClickListener { listener.onClickComment(itemView,tvcontcoments) }
 
 
         }
@@ -64,7 +66,7 @@ class PostAdapter (val context: Context,
         fun onClickLike(itemView: View) {
 
         }
-        fun onClickComment(itemView: View) {
+        fun onClickComment(itemView: View,tvcontcoments:TextView) {
         }
 
     }

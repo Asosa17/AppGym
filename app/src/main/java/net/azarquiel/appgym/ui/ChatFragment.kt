@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -47,7 +48,6 @@ class ChatFragment : Fragment(), PostAdapter.OnClickListenerRecycler  {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var formattedDate: String
-    private  var newDocumentComment: MutableMap<String,Any?> = HashMap()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -84,13 +84,18 @@ class ChatFragment : Fragment(), PostAdapter.OnClickListenerRecycler  {
             addPostFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogTheme)
             addPostFragment.show(childFragmentManager, "AddPostFragment.TAG")
         }
+        binding.fabactualizarrv.setOnClickListener {
+            obtenerPost(formattedDate)
+            binding.rvchat.smoothScrollToPosition(0)
+        }
     }
     private val onClickListenerComents = object : ComentarioAdapter.OnClickListenerRecycler {
 
     }
     private val onClickListener = object : PostAdapter.OnClickListenerRecycler {
-        override fun onClickComment(itemView: View) {
+        override fun onClickComment(itemView: View,tvcountcoment:TextView) {
             val post = itemView.tag as Post // Obtener el objeto post asociado al itemView
+            var tvcountcoment = tvcountcoment
             // Crear el Bottom Sheet
             val bottomSheetDialog = BottomSheetDialog(requireContext())
             val bottomSheetView = layoutInflater.inflate(R.layout.bottom_sheet_comments, null)
@@ -108,6 +113,7 @@ class ChatFragment : Fragment(), PostAdapter.OnClickListenerRecycler  {
             btnpublishcommentdialog.setOnClickListener {
                 publicarComments(post)
                 rvcomentariosdialog.smoothScrollToPosition(0)
+
             }
             // Mostrar el Bottom Sheet
             bottomSheetDialog.setContentView(bottomSheetView)
@@ -193,10 +199,10 @@ class ChatFragment : Fragment(), PostAdapter.OnClickListenerRecycler  {
                         comentarios?.let {
                             val newCommentMap = mutableMapOf<String, Any>()
                             newCommentMap["Contenido"] = edcomentdialog.text.toString()
-                            newCommentMap["Usuario"] = email
+                            newCommentMap["Usuario"] = datosUserSH.getString("username",null).toString()
                             newCommentMap["Likes"] = 0
 
-                            val newComment = Comentario(edcomentdialog.text.toString(), email, 0)
+                            val newComment = Comentario(edcomentdialog.text.toString(), datosUserSH.getString("username",null).toString(), 0)
                             // Agregar el nuevo comentario al array de comentarios en la base de datos
                             comentarios.add(newCommentMap)
                             // Actualizar el documento en la base de datos con la lista actualizada de comentarios
@@ -205,10 +211,12 @@ class ChatFragment : Fragment(), PostAdapter.OnClickListenerRecycler  {
                                 .addOnSuccessListener {
                                     // Agregar el nuevo comentario al array de comentarios del objeto Post
                                     rvcomentarios.add(newComment)
+                                    post.Comentarios.add(newComment)
                                     // Notificar al adaptador del RecyclerView de comentarios para actualizar la vista
-                                    adaptercoments.notifyDataSetChanged()
                                     rvcomentarios.reverse()
                                     adaptercoments.setComentarios(rvcomentarios)
+                                    adapter.notifyDataSetChanged()
+                                    adaptercoments.notifyDataSetChanged()
 
                                 }
                                 .addOnFailureListener { e ->

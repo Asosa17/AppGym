@@ -376,7 +376,7 @@ class AjustesFragment : Fragment() {
         cambiarVisibilidadConRetraso(clajustes, newVisibility)
         // Altura inicial y final
         //val startHeight = datos.height
-        val endHeight = if (isExpanded) startHeight else startHeight+250
+        val endHeight = if (isExpanded) startHeight else startHeight+300
 
         val duration = 800L // Duración de la animación en milisegundos
         // Crear un ValueAnimator para cambiar la altura del ConstraintLayout

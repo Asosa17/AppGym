@@ -90,7 +90,7 @@
                 android:layout_weight="1"
                 android:padding="10dp"
                 android:paddingEnd="20dp"
-                android:text="67"
+                android:text="0"
                 android:textColor="#FFFFFF"
                 android:textColorHighlight="#FFFFFF" />
         </LinearLayout>
