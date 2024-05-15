@@ -5,17 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import net.azarquiel.appgym.R
-import net.azarquiel.appgym.model.Rutina
+import net.azarquiel.appgym.model.Ejercicio
 
-class RutinaAdapter (val context: Context,
-                     val layout: Int,
-                     val listener: OnClickListenerRecycler
-) : RecyclerView.Adapter<RutinaAdapter.ViewHolder>(){
+class EjercicioAdapter (val context: Context,
+                        val layout: Int,
+                        val listener: OnClickListenerRecycler
+) : RecyclerView.Adapter<EjercicioAdapter.ViewHolder>(){
 
-    private var dataList: MutableList<Rutina> = mutableListOf()
+    private var dataList: MutableList<Ejercicio> = mutableListOf()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val viewlayout = layoutInflater.inflate(layout, parent, false)
@@ -36,31 +38,33 @@ class RutinaAdapter (val context: Context,
         return dataList.size
     }
 
-    internal fun setRutinas(rutinas: MutableList<Rutina>) {
-        this.dataList = rutinas
+    internal fun setEjercicios(ejs: MutableList<Ejercicio>) {
+        this.dataList = ejs
     }
 
 
     class ViewHolder(viewlayout: View, val context: Context) : RecyclerView.ViewHolder(viewlayout) {
-        fun bind(dataItem: Rutina, listener: OnClickListenerRecycler) {
+        fun bind(dataItem: Ejercicio, listener: OnClickListenerRecycler) {
             // itemview es el item de diseño
             // al que hay que poner los datos del objeto dataItem
-            val tvnombrerutina = itemView.findViewById(R.id.tvnombrerutina) as TextView
-            tvnombrerutina.setText(dataItem.Nombre)
-            val btneliminarrutina=itemView.findViewById<Button>(R.id.btneliminarrutina) as Button
+            val tvnombreej = itemView.findViewById(R.id.tvnombreej) as TextView
+            tvnombreej.setText(dataItem.NombreEj)
+            val ivfotoej = itemView.findViewById(R.id.ivfotoej) as ImageView
+            Picasso.get().load(dataItem.Foto).into(ivfotoej)
+            val btneliminarej=itemView.findViewById<Button>(R.id.btneliminarej) as Button
 
             itemView.tag = dataItem
-            itemView.setOnClickListener { listener.OnClickRutina(dataItem) }
-            btneliminarrutina.setOnClickListener { listener.OnClickEliminarRutina(itemView) }
+            itemView.setOnClickListener { listener.OnClickEj(dataItem) }
+            btneliminarej.setOnClickListener { listener.OnClickEliminarEj(itemView) }
 
 
         }
     }
     interface OnClickListenerRecycler {
-        fun OnClickRutina(dataItem: Rutina) {
+        fun OnClickEj(dataItem: Ejercicio) {
 
         }
-        fun OnClickEliminarRutina(itemView: View) {
+        fun OnClickEliminarEj(itemView: View) {
 
         }
 

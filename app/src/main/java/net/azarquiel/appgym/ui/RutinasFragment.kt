@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
@@ -53,7 +52,6 @@ class RutinasFragment : Fragment() {
 
     private fun initRV() {
         adapter = RutinaAdapter(requireContext(), R.layout.rowrutina,onClickListener)
-
         Rutinas = mutableListOf<Rutina>()
         binding.rvrutinas.adapter=adapter
         binding.rvrutinas.layoutManager= LinearLayoutManager(requireContext())
@@ -65,8 +63,8 @@ class RutinasFragment : Fragment() {
     }
 
     private val onClickListener = object : RutinaAdapter.OnClickListenerRecycler {
-        override fun OnClickRutina(itemView: View) {
-            val EjerciciosFragment = EjerciciosFragment()
+        override fun OnClickRutina(dataItem:Rutina) {
+            val EjerciciosFragment = EjerciciosFragment(dataItem)
             EjerciciosFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogTheme)
             EjerciciosFragment.show(childFragmentManager, "EjerciciosFragment.TAG")
         }
@@ -147,12 +145,11 @@ class RutinasFragment : Fragment() {
                             adapter.notifyDataSetChanged()
                             rutinasdb.update("rutinas", rutinas)
                                 .addOnSuccessListener {
-                                    // Rutina añadida con éxito
-                                    // Aquí puedes realizar cualquier acción adicional después de añadir la rutina
                                 }
                                 .addOnFailureListener { e ->
-                                    // Manejar errores al actualizar el documento en la base de datos
                                 }
+                        }else{
+                            Toast.makeText(requireContext(),"Ya existe una rutina con ese nombre", Toast.LENGTH_SHORT).show()
                         }
                     }
                     .addOnFailureListener { e ->
@@ -169,16 +166,22 @@ class RutinasFragment : Fragment() {
                 val rutinasdb = db.collection("users").document(email)
                 rutinasdb.get()
                     .addOnSuccessListener { document ->
-                        val rutinas = document.data?.get("rutinas") as MutableMap<String,Any>
-                        if (rutinas!=null){
+                        val rutinas = document.data?.get("rutinas") as? MutableMap<String, Any>
+                        if (rutinas != null) {
                             Rutinas.clear()
                             documentToListRutinas(rutinas)
                             adapter.setRutinas(Rutinas)
                             adapter.notifyDataSetChanged()
+                        } else {
+                            val nuevoRutinas = mutableMapOf<String, Any>()
+                            rutinasdb.update("rutinas", nuevoRutinas)
+                                .addOnSuccessListener {
+                                }
+                                .addOnFailureListener { e ->
+                                }
                         }
                     }
                     .addOnFailureListener { e ->
-                        // Manejar errores al obtener la lista de rutinas del usuario desde la base de datos
                     }
             }
         }
