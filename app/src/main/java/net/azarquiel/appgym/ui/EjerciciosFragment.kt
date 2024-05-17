@@ -3,9 +3,11 @@ package net.azarquiel.appgym.ui
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
@@ -17,7 +19,7 @@ import net.azarquiel.appgym.model.Ejercicio
 import net.azarquiel.appgym.model.Rutina
 
 
-class EjerciciosFragment(rutina: Rutina) :  DialogFragment() {
+class EjerciciosFragment(rutina: Rutina) :  DialogFragment(){
 
     private lateinit var adapter: EjercicioAdapter
     private lateinit var binding: FragmentEjerciciosBinding
@@ -26,8 +28,7 @@ class EjerciciosFragment(rutina: Rutina) :  DialogFragment() {
     private lateinit var datosUserSH: SharedPreferences
     private var email: String? = null
     private var rutina: Rutina = rutina
-    private lateinit var ejs: MutableList<Ejercicio>
-
+    private lateinit var Ejs: MutableList<Ejercicio>
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,11 +44,12 @@ class EjerciciosFragment(rutina: Rutina) :  DialogFragment() {
         db = FirebaseFirestore.getInstance()
         datosUserSH = requireActivity().getSharedPreferences("datosUserSh", Context.MODE_PRIVATE)
         initRV()
+
     }
     private fun initRV() {
         email = datosUserSH.getString("email", "")
         adapter = EjercicioAdapter(requireContext(), R.layout.rowej,onClickListener)
-        ejs = mutableListOf<Ejercicio>()
+        Ejs = mutableListOf<Ejercicio>()
         binding.rvejs.adapter=adapter
         binding.rvejs.layoutManager= LinearLayoutManager(requireContext())
         obtenerEjs()
@@ -59,7 +61,7 @@ class EjerciciosFragment(rutina: Rutina) :  DialogFragment() {
     private val onClickListener = object : EjercicioAdapter.OnClickListenerRecycler {
         override fun OnClickEliminarEj(itemView: View) {
             val ejercicio = itemView.tag as Ejercicio // Obtener el objeto Comida asociado al itemView
-            val position = ejs.indexOf(ejercicio) // Encontrar la posición del elemento en el array de comidas
+            val position = Ejs.indexOf(ejercicio) // Encontrar la posición del elemento en el array de comidas
             adapter.deleteItem(position) // Eliminar el elemento del RecyclerView y del array de comidas
             adapter.notifyDataSetChanged()
             emilinarej(ejercicio)
@@ -74,22 +76,23 @@ class EjerciciosFragment(rutina: Rutina) :  DialogFragment() {
                 val rutinasdb = db.collection("users").document(email)
                 rutinasdb.get()
                     .addOnSuccessListener { document ->
-                        val rutinas = document.data?.get("rutinas") as? MutableMap<String, MutableList<Map<String, Any>>>
+                        val rutinas = document.data?.get("rutinas") as? MutableMap<String, MutableMap<String, Map<String, Any>>>
                         if (rutinas != null) {
-                            rutinas.forEach { (_, ejercicios) ->
-                                ejercicios?.let {
-                                    val ejercicioMap = ejercicios.find { it["NombreEj"] == ejercicio.NombreEj } // Encuentra el ejercicio en la lista de ejercicios
-                                    if (ejercicioMap != null) {
-                                        ejercicios.remove(ejercicioMap) // Elimina el ejercicio de la lista
-                                        rutinasdb.update("rutinas", rutinas) // Actualiza la lista de ejercicios en la base de datos
-                                            .addOnSuccessListener {
-                                                // Ejercicio eliminado con éxito
-                                            }
-                                            .addOnFailureListener { e ->
-                                                // Manejar errores al actualizar la lista de ejercicios en la base de datos
-                                            }
+                            val ejercicios = rutinas[rutina.Nombre]
+                            if (ejercicios != null && ejercicios.containsKey(ejercicio.id)) {
+                                // Remove the exercise from the map
+                                ejercicios.remove(ejercicio.id)
+
+                                // Update the "rutinas" field in Firestore
+                                rutinasdb.update("rutinas", rutinas)
+                                    .addOnSuccessListener {
+                                        // Ejercicio eliminado con éxito
+                                        Log.d("Firestore", "Ejercicio eliminado correctamente")
                                     }
-                                }
+                                    .addOnFailureListener { e ->
+                                        // Manejar errores al actualizar la lista de ejercicios en la base de datos
+                                        Log.e("Firestore", "Error eliminando el ejercicio", e)
+                                    }
                             }
                         }
                     }
@@ -106,32 +109,46 @@ class EjerciciosFragment(rutina: Rutina) :  DialogFragment() {
             val userEmail = user.email
             userEmail?.let { email ->
                 val rutinasdb = db.collection("users").document(email)
-                rutinasdb.get()
-                    .addOnSuccessListener { document ->
-                        val rutinas = document.data?.get("rutinas") as? MutableMap<String, Any>
-                        if (rutinas != null) {
-                            val ejercicios= rutinas[rutina.Nombre] as? MutableList<Ejercicio>
-                            if (!ejercicios.isNullOrEmpty()){
-                                ejs.clear()
-                                documentToListEjs(ejercicios)
-                                adapter.setEjercicios(ejs)
-                                adapter.notifyDataSetChanged()
+                rutinasdb.addSnapshotListener { snapshot, e ->
+                    if (e != null) {
+                        Log.w("TAG", "Listen failed.", e)
+                        return@addSnapshotListener
+                    }
+                    if (snapshot != null && snapshot.exists()) {
+                        val rutinas = snapshot.data?.get("rutinas") as? MutableMap<String, Any>
+                        rutinas?.let {
+                            val ejercicios = it[rutina.Nombre] as? MutableMap<String, Map<String, Any>>
+                            ejercicios?.let {
+                                if (!ejercicios.isNullOrEmpty()) {
+                                    Ejs.clear()
+                                    documentToListEjs(ejercicios)
+                                    adapter.setEjercicios(Ejs)
+                                    adapter.notifyDataSetChanged()
+                                }
                             }
                         }
+                    } else {
+                        Log.d("TAG", "Current data: null")
                     }
-                    .addOnFailureListener { e ->
-                    }
+                }
             }
         }
     }
     private fun añadirej() {
-        val AddEjFragment = AddEjFragment(rutina)
+        val AddEjFragment = AddEjFragment(rutina,this)
         AddEjFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogTheme)
         AddEjFragment.show(childFragmentManager, "AddEjFragment.TAG")
     }
-    private fun documentToListEjs(ejs: MutableList<Ejercicio>) {
-        ejs.forEach { ejercicio ->
-            this.ejs.add(ejercicio)
+    private fun documentToListEjs(ejs: MutableMap<String,Map<String,Any>>) {
+        ejs.forEach { (id, ejercicioMap) ->
+            val id = ejercicioMap["id"] as? String ?: ""
+            val nombre = ejercicioMap["nombre"] as? String ?: ""
+            val foto = ejercicioMap["foto"] as? String ?: ""
+            val descripcion = ejercicioMap["descripcion"] as? String ?: ""
+            val ejercicio = Ejercicio(id,nombre, foto, descripcion)
+            Ejs.add(ejercicio)
         }
     }
+
+
 }

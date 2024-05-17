@@ -126,7 +126,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/botonesstyle"
                 android:padding="10dp"
-                android:text="PECHO"
+                android:text="PECTORALES"
                 android:textAlignment="center"
                 android:textColor="#FFFFFF" />
 

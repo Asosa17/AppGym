@@ -2,35 +2,27 @@ package net.azarquiel.appgym.ui
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.SearchView
-import androidx.core.content.ContextCompat.getSystemService
+import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
 import net.azarquiel.appgym.R
 import net.azarquiel.appgym.adapters.AddEjAdapter
-import net.azarquiel.appgym.adapters.EjercicioAdapter
 import net.azarquiel.appgym.databinding.FragmentAddEjBinding
 import net.azarquiel.appgym.model.Ejercicio
 import net.azarquiel.appgym.model.Rutina
 
 
-class AddEjFragment(rutina: Rutina) : DialogFragment(), SearchView.OnQueryTextListener {
+class AddEjFragment(rutina: Rutina, ejerciciosFragment: EjerciciosFragment) : DialogFragment(), SearchView.OnQueryTextListener {
     private lateinit var adapter: AddEjAdapter
     private lateinit var binding: FragmentAddEjBinding
     private lateinit var auth: FirebaseAuth
@@ -38,6 +30,8 @@ class AddEjFragment(rutina: Rutina) : DialogFragment(), SearchView.OnQueryTextLi
     private lateinit var datosUserSH: SharedPreferences
     private var email: String? = null
     private lateinit var ejs: MutableList<Ejercicio>
+    private var rutina:Rutina=rutina
+    private var ejerciciosFragment:EjerciciosFragment=ejerciciosFragment
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,19 +48,34 @@ class AddEjFragment(rutina: Rutina) : DialogFragment(), SearchView.OnQueryTextLi
         db = FirebaseFirestore.getInstance()
         datosUserSH = requireActivity().getSharedPreferences("datosUserSh", Context.MODE_PRIVATE)
         initRV()
+
     }
+
     private fun initRV() {
         email = datosUserSH.getString("email", "")
         ejs = mutableListOf<Ejercicio>()
         adapter = AddEjAdapter(requireContext(), R.layout.rowej,onClickListener)
         binding.rvaddejs.adapter=adapter
         binding.rvaddejs.layoutManager= LinearLayoutManager(requireContext())
-        obtenerejs()
+        obtenerejs("ABDOMINALES")
+        obtenercats()
         val serachviewejs = binding.searchViewejs
         serachviewejs.setQueryHint("Search...")
         serachviewejs.setOnQueryTextListener(this)
-        val text = serachviewejs.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
     }
+
+    private fun obtenercats() {
+        for (j in 0 until binding.lyhcategorias.childCount) {
+            var textview = binding.lyhcategorias.getChildAt(j) as TextView
+            textview.setOnClickListener { onclikcat( textview.text.toString()) }
+        }
+    }
+
+    private fun onclikcat(catpulsada:String) {
+        ejs.clear()
+        obtenerejs(catpulsada)
+    }
+
     override fun onQueryTextChange(query: String): Boolean {
         val filteredList = ejs
         val filt=filteredList.filter { ejercicio -> ejercicio.NombreEj.contains(query, true) }
@@ -78,18 +87,86 @@ class AddEjFragment(rutina: Rutina) : DialogFragment(), SearchView.OnQueryTextLi
         return false
     }
     private val onClickListener = object : AddEjAdapter.OnClickListenerRecycler {
-        override fun OnClickAddEj(dataItem: Ejercicio){
-
-
+        override fun OnClickAddEj(itemView:View){
+            val dataItem = itemView.tag as Ejercicio
+            añadirej(dataItem)
         }
     }
 
-    private fun obtenerejs() {
+    private fun añadirej(dataItem:Ejercicio) {
         val currentUser = auth.currentUser
         currentUser?.let { user ->
             val userEmail = user.email
             userEmail?.let { email ->
-                val ejsdb = db.collection("/CATEGORIAS/TRICEPS/EJERCICIOS")
+                val rutinasdb = db.collection("users").document(email)
+                rutinasdb.get()
+                    .addOnSuccessListener { document ->
+                        val rutinas = document.data?.get("rutinas") as? MutableMap<String, Any>
+                        if (rutinas != null) {
+                            // Retrieve the list of exercises for the specific "rutina"
+                            var ejercicios = rutinas[rutina.Nombre] as? MutableMap<String,Map<String, Any>>
+                            if (ejercicios == null) {
+                                // If the list is null, initialize it as an empty list
+                                ejercicios = mutableMapOf()
+                                rutinas[rutina.Nombre] = ejercicios
+                                // Create a new map from the dataItem to match the Firestore format
+                                val ejercicioMap = mapOf(
+                                    "id" to dataItem.id,
+                                    "nombre" to dataItem.NombreEj,
+                                    "foto" to dataItem.Foto,
+                                    "descripcion" to dataItem.Descripcion,
+                                )
+                                ejercicios[dataItem.id] = ejercicioMap
+                                // Update the "rutinas" field in Firestore
+                                rutinasdb.update("rutinas", rutinas)
+                                    .addOnSuccessListener {
+                                        // Successfully updated the Firestore document
+                                        Log.d("Firestore", "Ejercicio actualizado correctamente")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        // Handle the error
+                                        Log.e("Firestore", "Error actualizando el ejercicio", e)
+                                    }
+                            }else if (ejercicios != null) {
+                                // Create a new map from the dataItem to match the Firestore format
+                                val ejercicioMap = mapOf(
+                                    "id" to dataItem.id,
+                                    "nombre" to dataItem.NombreEj,
+                                    "foto" to dataItem.Foto,
+                                    "descripcion" to dataItem.Descripcion,
+                                )
+                                ejercicios[dataItem.id] = ejercicioMap
+                                // Update the "rutinas" field in Firestore
+                                rutinasdb.update("rutinas", rutinas)
+                                    .addOnSuccessListener {
+                                        // Successfully updated the Firestore document
+                                        Log.d("Firestore", "Ejercicio actualizado correctamente")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        // Handle the error
+                                        Log.e("Firestore", "Error actualizando el ejercicio", e)
+                                    }
+                            } else {
+                                Log.e("Firestore", "No se encontró la lista de ejercicios")
+                            }
+                        } else {
+                            Log.e("Firestore", "No se encontró el campo rutinas")
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("Firestore", "No se encontró el campo rutinas")
+                    }
+            }
+
+        }
+    }
+
+    private fun obtenerejs(catpulsada: String) {
+        val currentUser = auth.currentUser
+        currentUser?.let { user ->
+            val userEmail = user.email
+            userEmail?.let { email ->
+                val ejsdb = db.collection("/CATEGORIAS/${catpulsada}/EJERCICIOS")
                 ejsdb.get()
                     .addOnSuccessListener { documents ->
                         documentsToList(documents)

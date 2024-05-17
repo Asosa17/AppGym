@@ -57,12 +57,12 @@ class AddEjAdapter (val context: Context,
             btneliminarej.visibility= View.GONE
 
             itemView.tag = dataItem
-            itemView.setOnClickListener { listener.OnClickAddEj(dataItem) }
+            itemView.setOnClickListener { listener.OnClickAddEj(itemView) }
 
         }
     }
     interface OnClickListenerRecycler {
-        fun OnClickAddEj(dataItem: Ejercicio) {
+        fun OnClickAddEj(itemView: View) {
 
         }
     }
