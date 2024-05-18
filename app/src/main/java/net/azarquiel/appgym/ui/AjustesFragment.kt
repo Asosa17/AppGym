@@ -51,6 +51,7 @@ import androidx.core.os.LocaleListCompat
 import androidx.core.view.get
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -92,7 +93,7 @@ class AjustesFragment : Fragment() {
     private lateinit var email: String
     private lateinit var dialog: Dialog
     private var userlocal: FirebaseUser?=null
-    private lateinit var IvUserAvatar: ImageView
+    private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var launcherImage : ActivityResultLauncher<Intent>
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
@@ -460,23 +461,17 @@ class AjustesFragment : Fragment() {
         }
     }
     private fun openDialog() {
-        val builder = AlertDialog.Builder(requireContext())
-        val inflater = layoutInflater
-        val dialogView = inflater.inflate(R.layout.dialog_creator, null)
+        bottomSheetDialog = BottomSheetDialog(requireContext())
+        val bottomSheetView = layoutInflater.inflate(R.layout.dialog_creator, null)
 
-        btnCamara = dialogView.findViewById<Button>(R.id.btnCamara)
-        btnGalery = dialogView.findViewById<Button>(R.id.btnGalery)
+        btnCamara = bottomSheetView.findViewById<Button>(R.id.btnCamara)
+        btnGalery = bottomSheetView.findViewById<Button>(R.id.btnGalery)
 
         btnGalery.setOnClickListener { onClickOpenGalery() }
         btnCamara.setOnClickListener { onClickOpenCamara() }
-        builder.setView(dialogView)
-            .setTitle("Agregar imagen desde: ")
-            .setNegativeButton("Cancelar") { dialog, id ->
-                // Acciones a realizar al hacer clic en "Cancelar"
-            }
 
-        dialog = builder.create()
-        dialog.show()
+        bottomSheetDialog.setContentView(bottomSheetView)
+        bottomSheetDialog.show()
     }
 
     fun onClickOpenGalery() {
@@ -533,7 +528,7 @@ class AjustesFragment : Fragment() {
                     intent.data?.let { uri ->
                         binding.IvUserAvatar.setImageURI(uri)
                         uploadImage(uri)
-                        (dialog as AlertDialog).dismiss()
+                        bottomSheetDialog.dismiss()
                     }
                 }
             }
@@ -549,7 +544,7 @@ class AjustesFragment : Fragment() {
                 // Subir la imagen a Firebase
                 uploadImage(tempUri)
                 // Cerrar el diálogo
-                (dialog as AlertDialog).dismiss()
+                bottomSheetDialog.dismiss()
             }
         }
     }

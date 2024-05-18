@@ -5,7 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    android:background="@drawable/botonesstyle">
+    android:background="@drawable/botonesstyle"
+    >
+
+
 
     <TextView
         android:id="@+id/tvnombrerutina"
@@ -30,4 +33,5 @@
         android:background="@drawable/papelera"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

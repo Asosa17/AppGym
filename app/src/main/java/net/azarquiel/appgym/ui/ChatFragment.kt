@@ -85,6 +85,7 @@ class ChatFragment : Fragment(), PostAdapter.OnClickListenerRecycler  {
             addPostFragment.show(childFragmentManager, "AddPostFragment.TAG")
         }
         binding.fabactualizarrv.setOnClickListener {
+
             obtenerPost(formattedDate)
             binding.rvchat.smoothScrollToPosition(0)
         }
@@ -241,6 +242,7 @@ class ChatFragment : Fragment(), PostAdapter.OnClickListenerRecycler  {
                 db.collection("postsTotales").get()
                     .addOnSuccessListener {
                         it?.let {
+                            posts.clear()
                             documentToList(it.documents)
                             posts.reverse()
                             adapter.setPosts(posts)

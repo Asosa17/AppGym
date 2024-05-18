@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -58,12 +59,32 @@ class AddEjFragment(rutina: Rutina, ejerciciosFragment: EjerciciosFragment) : Di
         binding.rvaddejs.adapter=adapter
         binding.rvaddejs.layoutManager= LinearLayoutManager(requireContext())
         obtenerejs("ABDOMINALES")
+        binding.tvaddejs.text = "ABDOMINALES"
         obtenercats()
         val serachviewejs = binding.searchViewejs
         serachviewejs.setQueryHint("Search...")
         serachviewejs.setOnQueryTextListener(this)
+        val tema = datosUserSH.getString("tema","1").toString()
+        detectafondo(tema)
+        binding.ivcancelaraddej2.setOnClickListener {
+            dismiss()
+        }
     }
+    private fun detectafondo(tema: String) {
+        val tema = tema.toInt()
+        when(tema){
+            1-> {
+                binding.cntladdej.setBackgroundResource(R.drawable.fondoajustes)
+            }
+            2->{
+                binding.cntladdej.setBackgroundResource(R.drawable.fondoajustesazul)
+            }
+            3->{
+                binding.cntladdej.setBackgroundResource(R.drawable.fondoajustesverde)
+            }
 
+        }
+    }
     private fun obtenercats() {
         for (j in 0 until binding.lyhcategorias.childCount) {
             var textview = binding.lyhcategorias.getChildAt(j) as TextView
@@ -74,6 +95,7 @@ class AddEjFragment(rutina: Rutina, ejerciciosFragment: EjerciciosFragment) : Di
     private fun onclikcat(catpulsada:String) {
         ejs.clear()
         obtenerejs(catpulsada)
+        binding.tvaddejs.text = catpulsada
     }
 
     override fun onQueryTextChange(query: String): Boolean {
@@ -90,6 +112,7 @@ class AddEjFragment(rutina: Rutina, ejerciciosFragment: EjerciciosFragment) : Di
         override fun OnClickAddEj(itemView:View){
             val dataItem = itemView.tag as Ejercicio
             añadirej(dataItem)
+            Toast.makeText(requireContext(),"Ejercicio añadido correctamente",Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -135,6 +135,23 @@ class AddPostFragment(val Chat:ChatFragment) : DialogFragment() {
         binding.ivapfotopost.setOnClickListener {
             openDialog()
         }
+        val tema = datosUserSH.getString("tema","1").toString()
+        detectafondo(tema)
+    }
+    private fun detectafondo(tema: String) {
+        val tema = tema.toInt()
+        when(tema){
+            1-> {
+                binding.cnladdpost.setBackgroundResource(R.drawable.fondoajustes)
+            }
+            2->{
+                binding.cnladdpost.setBackgroundResource(R.drawable.fondoajustesazul)
+            }
+            3->{
+                binding.cnladdpost.setBackgroundResource(R.drawable.fondoajustesverde)
+            }
+
+        }
     }
 
     private fun publicarPost() {

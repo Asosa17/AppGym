@@ -44,7 +44,8 @@ class EjerciciosFragment(rutina: Rutina) :  DialogFragment(){
         db = FirebaseFirestore.getInstance()
         datosUserSH = requireActivity().getSharedPreferences("datosUserSh", Context.MODE_PRIVATE)
         initRV()
-
+        val tema = datosUserSH.getString("tema","1").toString()
+        detectafondo(tema)
     }
     private fun initRV() {
         email = datosUserSH.getString("email", "")
@@ -56,8 +57,25 @@ class EjerciciosFragment(rutina: Rutina) :  DialogFragment(){
         binding.fabaaddej.setOnClickListener {
             añadirej()
         }
+        binding.ivcancelaraddej.setOnClickListener {
+            dismiss()
+        }
     }
+    private fun detectafondo(tema: String) {
+        val tema = tema.toInt()
+        when(tema){
+            1-> {
+                binding.cntlfej.setBackgroundResource(R.drawable.fondoajustes)
+            }
+            2->{
+                binding.cntlfej.setBackgroundResource(R.drawable.fondoajustesazul)
+            }
+            3->{
+                binding.cntlfej.setBackgroundResource(R.drawable.fondoajustesverde)
+            }
 
+        }
+    }
     private val onClickListener = object : EjercicioAdapter.OnClickListenerRecycler {
         override fun OnClickEliminarEj(itemView: View) {
             val ejercicio = itemView.tag as Ejercicio // Obtener el objeto Comida asociado al itemView

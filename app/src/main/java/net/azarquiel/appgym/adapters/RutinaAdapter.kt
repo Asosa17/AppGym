@@ -1,11 +1,17 @@
 package net.azarquiel.appgym.adapters
 
 import android.content.Context
+import android.graphics.RenderEffect
+import android.graphics.Shader
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import net.azarquiel.appgym.R
 import net.azarquiel.appgym.model.Rutina
@@ -25,7 +31,6 @@ class RutinaAdapter (val context: Context,
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataList[position]
         holder.bind(item,listener)
-
     }
 
     fun deleteItem(position: Int) {
@@ -42,13 +47,13 @@ class RutinaAdapter (val context: Context,
 
 
     class ViewHolder(viewlayout: View, val context: Context) : RecyclerView.ViewHolder(viewlayout) {
+
         fun bind(dataItem: Rutina, listener: OnClickListenerRecycler) {
             // itemview es el item de diseño
             // al que hay que poner los datos del objeto dataItem
             val tvnombrerutina = itemView.findViewById(R.id.tvnombrerutina) as TextView
             tvnombrerutina.setText(dataItem.Nombre)
             val btneliminarrutina=itemView.findViewById<Button>(R.id.btneliminarrutina) as Button
-
             itemView.tag = dataItem
             itemView.setOnClickListener { listener.OnClickRutina(dataItem) }
             btneliminarrutina.setOnClickListener { listener.OnClickEliminarRutina(itemView) }
@@ -56,6 +61,7 @@ class RutinaAdapter (val context: Context,
 
         }
     }
+
     interface OnClickListenerRecycler {
         fun OnClickRutina(dataItem: Rutina) {
 
