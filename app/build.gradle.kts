@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+
 }
 
 android {
@@ -59,6 +60,8 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     //https://www.geeksforgeeks.org/how-to-use-animated-gif-in-android-app/
     implementation ("com.github.bumptech.glide:glide:4.16.0")
+    implementation("org.quanqi:android-holo-graph:0.1.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
 
 }
