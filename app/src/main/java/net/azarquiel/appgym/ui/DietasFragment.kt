@@ -329,7 +329,7 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
                 userDocument.get()
                     .addOnSuccessListener { document ->
                         if (document != null) {
-                            val comidasMapa = document.data?.get("comidas") as MutableMap<String, Any>?
+                            val comidasMapa = document.data?.get("comidas") as? MutableMap<String, Any>?: HashMap()
                             if (comidasMapa != null) {
                                 // Obtener el mapa de comidas para la fecha actual o crear uno nuevo si no existe
                                 val comidasFecha = comidasMapa.getOrPut(fechaFormateada) { mutableMapOf<String, Any>() } as MutableMap<String, Any>

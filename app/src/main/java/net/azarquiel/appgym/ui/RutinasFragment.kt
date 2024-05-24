@@ -136,7 +136,7 @@ class RutinasFragment : Fragment() {
                 val rutinasdb = db.collection("users").document(email)
                 rutinasdb.get()
                     .addOnSuccessListener { document ->
-                        val rutinas = document.data?.get("rutinas") as MutableMap<String,Any>
+                        val rutinas = document.data?.get("rutinas") as? MutableMap<String,Any> ?: HashMap()
                         if (!rutinas.containsKey(nombreRutina)){
                             // Crea una nueva rutina vacía
                             val nuevaRutina: MutableMap<String, Any> = mutableMapOf()
@@ -166,19 +166,12 @@ class RutinasFragment : Fragment() {
                 val rutinasdb = db.collection("users").document(email)
                 rutinasdb.get()
                     .addOnSuccessListener { document ->
-                        val rutinas = document.data?.get("rutinas") as? MutableMap<String, Any>
+                        val rutinas = document.data?.get("rutinas") as? MutableMap<String, Any> ?: HashMap()
                         if (rutinas != null) {
                             Rutinas.clear()
                             documentToListRutinas(rutinas)
                             adapter.setRutinas(Rutinas)
                             adapter.notifyDataSetChanged()
-                        } else {
-                            val nuevoRutinas = mutableMapOf<String, Any>()
-                            rutinasdb.update("rutinas", nuevoRutinas)
-                                .addOnSuccessListener {
-                                }
-                                .addOnFailureListener { e ->
-                                }
                         }
                     }
                     .addOnFailureListener { e ->

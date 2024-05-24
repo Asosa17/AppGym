@@ -8,9 +8,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.echo.holographlibrary.Line
 import com.echo.holographlibrary.LinePoint
 import com.github.mikephil.charting.charts.LineChart
@@ -32,14 +35,19 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.squareup.picasso.Picasso
 import net.azarquiel.appgym.R
+import net.azarquiel.appgym.adapters.PesoAdapter
+import net.azarquiel.appgym.adapters.RutinaAdapter
 import net.azarquiel.appgym.databinding.FragmentEjerciciosBinding
 import net.azarquiel.appgym.databinding.FragmentHomeBinding
+import net.azarquiel.appgym.model.Peso
+import net.azarquiel.appgym.model.Rutina
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 class HomeFragment : Fragment(), OnChartValueSelectedListener {
 
+    private lateinit var messelec: TextView
     private lateinit var lineChart: LineChart
     private lateinit var binding: FragmentHomeBinding
     private lateinit var root: View
@@ -47,6 +55,8 @@ class HomeFragment : Fragment(), OnChartValueSelectedListener {
     private lateinit var auth: FirebaseAuth;
     private lateinit var db: FirebaseFirestore
     private lateinit var datosUserSH: SharedPreferences
+    private lateinit var weightsByMonth: MutableList<Peso>
+    private lateinit var adapter: PesoAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -64,20 +74,59 @@ class HomeFragment : Fragment(), OnChartValueSelectedListener {
         val username = datosUserSH.getString("username",null)
         Picasso.get().load(imageUrl).into(binding.ivhomeuser)
         binding.tvhomeuser.setText("Hola ${username}")
+        messelec=binding.tvmesselecc
         lineChart = binding.barChart
-
+        initRV()
         obtenePesos()
 
         lineChart.setOnChartValueSelectedListener(this)
+
+    }
+
+    private fun initRV() {
+        adapter = PesoAdapter(requireContext(), R.layout.rowpeso)
+        weightsByMonth = mutableListOf<Peso>()
+        binding.rvpesoshomf.adapter=adapter
+        binding.rvpesoshomf.layoutManager= LinearLayoutManager(requireContext())
     }
 
     override fun onValueSelected(e: Entry?, h: Highlight?) {
         e?.let {
-            // Acción al seleccionar un valor
-            Toast.makeText(context, "Valor seleccionado: ${it.y} en el mes: ${it.x.toInt()}", Toast.LENGTH_SHORT).show()
+            val month = it.x.toInt()
+            val selectedMonthWeights = getWeightsForMonth(month)
+            adapter.setPesos(selectedMonthWeights)
+            adapter.notifyDataSetChanged()
+            messelec.text=obtenernombre(month)
+
         }
     }
 
+    private fun obtenernombre(month: Int): CharSequence? {
+        return when (month) {
+            1 -> "Enero"
+            2 -> "Febrero"
+            3 -> "Marzo"
+            4 -> "Abril"
+            5 -> "Mayo"
+            6 -> "Junio"
+            7 -> "Julio"
+            8 -> "Agosto"
+            9 -> "Septiembre"
+            10 -> "Octubre"
+            11 -> "Noviembre"
+            12 -> "Diciembre"
+            else -> ""
+        }
+    }
+
+
+    private fun getWeightsForMonth(month: Int): MutableList<Peso> {
+        val monthFormat = SimpleDateFormat("MM", Locale.getDefault())
+        return weightsByMonth.filter { peso ->
+            val pesoMonth = monthFormat.format(SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(peso.fecha))
+            pesoMonth.toInt() == month
+        }.toMutableList()
+    }
     override fun onNothingSelected() {
         // Acción al deseleccionar un valor
     }
@@ -93,10 +142,23 @@ class HomeFragment : Fragment(), OnChartValueSelectedListener {
                             return@addSnapshotListener
                         }
                         if (snapshot != null && snapshot.exists()) {
-                            val weightsMap = snapshot.data?.get("peso") as Map<String, Any>
+                            val weightsMap = snapshot.data?.get("peso") as Map<String, String>
+                            weightsByMonth.clear()
+                            weightsMap.forEach { (fecha, pesoStr) ->
+                                weightsByMonth.add(Peso(fecha, pesoStr))
+                            }
+                            weightsByMonth.sortBy { it.fecha }
+
                             val monthlyAverages = calculateMonthlyAverages(weightsMap)
                             setupChart(monthlyAverages)
+                            // Mostrar los pesos del mes actual
+                            val currentMonth = Calendar.getInstance().get(Calendar.MONTH)+1
+                            val currentMonthWeights = getWeightsForMonth(currentMonth)
+                            currentMonthWeights.reverse()
+                            adapter.setPesos(currentMonthWeights)
+                            adapter.notifyDataSetChanged()
                         }
+
                     }
             }
         }
@@ -148,6 +210,12 @@ class HomeFragment : Fragment(), OnChartValueSelectedListener {
         dataSet.valueTextColor = Color.WHITE
         dataSet.setDrawFilled(false)
         dataSet.fillColor = Color.WHITE
+        dataSet.mode = LineDataSet.Mode.HORIZONTAL_BEZIER // Configurar la línea como curva
+        dataSet.cubicIntensity = 0.2f // Ajusta la intensidad de la curva
+        dataSet.setDrawHorizontalHighlightIndicator(false)
+        dataSet.highLightColor = Color.GRAY
+        dataSet.highlightLineWidth=2f
+        dataSet.valueTextSize= 10f
         lineChart.legend.isEnabled = false
 
         // Configuración del eje X (Meses)
@@ -165,7 +233,9 @@ class HomeFragment : Fragment(), OnChartValueSelectedListener {
         // Configuración del eje Y (Pesos en kg)
         val yAxisRight: YAxis = lineChart.axisRight
         yAxisRight.isEnabled = false
+
         val yAxisLeft: YAxis = lineChart.axisLeft
+        yAxisLeft.setDrawGridLines(false)
         yAxisLeft.textColor = Color.WHITE
         yAxisLeft.axisMinimum = 0f
         yAxisLeft.axisMaximum = (maxWeight + 20).coerceAtLeast(100f)
@@ -186,8 +256,11 @@ class HomeFragment : Fragment(), OnChartValueSelectedListener {
 
         // Permitir desplazamiento horizontal y establecer el rango visible a 3 meses
         lineChart.setVisibleXRangeMaximum(3f)
-        lineChart.moveViewToX(0f)
+        val currentMonth = Calendar.getInstance().get(Calendar.MONTH)
 
+        lineChart.moveViewToX(currentMonth.toFloat()-0.5f)
+        lineChart.highlightValue(currentMonth.toFloat()+1,0)
+        messelec.text=obtenernombre(currentMonth+1)
         lineChart.invalidate() // Refrescar el gráfico
     }
 
