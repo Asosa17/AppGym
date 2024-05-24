@@ -55,6 +55,10 @@ class AddEjAdapter (val context: Context,
             Glide.with(context).load(dataItem.Foto).into(ivfotoej)
             val btneliminarej=itemView.findViewById<Button>(R.id.btneliminarej) as Button
             btneliminarej.visibility= View.GONE
+            val tvrepsserire=itemView.findViewById<TextView>(R.id.tvrepsserire) as TextView
+            tvrepsserire.visibility= View.GONE
+            val tvkgserie=itemView.findViewById<TextView>(R.id.tvkgserie) as TextView
+            tvkgserie.visibility= View.GONE
 
             itemView.tag = dataItem
             itemView.setOnClickListener { listener.OnClickAddEj(itemView) }

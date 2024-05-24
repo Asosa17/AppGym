@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.squareup.picasso.Picasso
@@ -45,6 +46,8 @@ class EjercicioAdapter (val context: Context,
 
 
     class ViewHolder(viewlayout: View, val context: Context) : RecyclerView.ViewHolder(viewlayout) {
+        private lateinit var seriesAdapter: SerieAdapter
+        private val rvSeries: RecyclerView = itemView.findViewById(R.id.rvseriesej)
         fun bind(dataItem: Ejercicio, listener: OnClickListenerRecycler) {
             // itemview es el item de diseño
             // al que hay que poner los datos del objeto dataItem
@@ -56,8 +59,12 @@ class EjercicioAdapter (val context: Context,
             itemView.tag = dataItem
             itemView.setOnClickListener { listener.OnClickEj(dataItem) }
             btneliminarej.setOnClickListener { listener.OnClickEliminarEj(itemView) }
-
-
+            // Configure the RecyclerView for the series
+            seriesAdapter = SerieAdapter(context, R.layout.rowserie)
+            rvSeries.adapter = seriesAdapter
+            rvSeries.layoutManager = LinearLayoutManager(context)
+            // Set the series data to the adapter
+            seriesAdapter.setSeries(dataItem.Series.toMutableList())
         }
     }
     interface OnClickListenerRecycler {

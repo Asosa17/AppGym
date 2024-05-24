@@ -206,7 +206,7 @@ class AddEjFragment(rutina: Rutina, ejerciciosFragment: EjerciciosFragment) : Di
             val imageUrl = document.getString("imageUrl")?:""
             val nombre = document.getString("nombre") ?: ""
             val descripcion = document.getString("descripcion") ?: ""
-            val ejercicio = Ejercicio(id, nombre, imageUrl, descripcion)
+            val ejercicio = Ejercicio(id, nombre, imageUrl, descripcion, mutableListOf())
             ejs.add(ejercicio)
 
         }

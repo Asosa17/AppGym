@@ -17,6 +17,7 @@ import net.azarquiel.appgym.adapters.EjercicioAdapter
 import net.azarquiel.appgym.databinding.FragmentEjerciciosBinding
 import net.azarquiel.appgym.model.Ejercicio
 import net.azarquiel.appgym.model.Rutina
+import net.azarquiel.appgym.model.Serie
 
 
 class EjerciciosFragment(rutina: Rutina) :  DialogFragment(){
@@ -163,7 +164,14 @@ class EjerciciosFragment(rutina: Rutina) :  DialogFragment(){
             val nombre = ejercicioMap["nombre"] as? String ?: ""
             val foto = ejercicioMap["foto"] as? String ?: ""
             val descripcion = ejercicioMap["descripcion"] as? String ?: ""
-            val ejercicio = Ejercicio(id,nombre, foto, descripcion)
+            val seriesMapList = ejercicioMap["series"] as? MutableList<Map<String,Any>> ?: mutableListOf()
+            // Convertir cada Map en un objeto Serie
+            val series = seriesMapList.map { map ->
+                val reps = map["reps"] as? String ?: ""
+                val peso = map["peso"] as? String ?: ""
+                Serie(peso, reps)
+            }.toMutableList()
+            val ejercicio = Ejercicio(id,nombre, foto, descripcion,series)
             Ejs.add(ejercicio)
         }
     }

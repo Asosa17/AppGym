@@ -6,4 +6,5 @@ data class Post(var Foto:String,var Likes:MutableList<String>, var Comentarios:M
 data class Comentario(var Contenido:String,var Usuario:String, var Likes:Long)
 data class Rutina(var Nombre:String)
 data class Peso(var fecha:String,var peso: String)
-data class Ejercicio(var id:String,var NombreEj:String,var Foto:String, var Descripcion:String)
+data class Serie(var peso:String,var reps: String)
+data class Ejercicio(var id:String,var NombreEj:String,var Foto:String, var Descripcion:String,var Series:MutableList<Serie>)
