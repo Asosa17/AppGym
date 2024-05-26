@@ -1,20 +1,29 @@
 package net.azarquiel.appgym.ui
 
+import android.app.Dialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import net.azarquiel.appgym.R
 import net.azarquiel.appgym.adapters.EjercicioAdapter
+import net.azarquiel.appgym.adapters.SerieAdapter
 import net.azarquiel.appgym.databinding.FragmentEjerciciosBinding
+import net.azarquiel.appgym.model.Comida
 import net.azarquiel.appgym.model.Ejercicio
 import net.azarquiel.appgym.model.Rutina
 import net.azarquiel.appgym.model.Serie
@@ -30,6 +39,7 @@ class EjerciciosFragment(rutina: Rutina) :  DialogFragment(){
     private var email: String? = null
     private var rutina: Rutina = rutina
     private lateinit var Ejs: MutableList<Ejercicio>
+    private lateinit var dialog: Dialog
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -84,6 +94,135 @@ class EjerciciosFragment(rutina: Rutina) :  DialogFragment(){
             adapter.deleteItem(position) // Eliminar el elemento del RecyclerView y del array de comidas
             adapter.notifyDataSetChanged()
             emilinarej(ejercicio)
+        }
+        override fun OnClickAddSerie(itemView: View){
+            val ejercicio = itemView.tag as Ejercicio
+            opendialogAddSerie(ejercicio)
+
+        }
+        override fun OnClickEliminarSerie(dataitem:Serie,itemView: View) {
+            val serie = dataitem
+            val ejercicio = itemView.tag as Ejercicio
+            eliminarSerie(serie,ejercicio)
+        }
+    }
+
+    private fun opendialogAddSerie(ejercicio: Ejercicio) {
+        val builder = AlertDialog.Builder(requireContext(),R.style.CustomAlertDialog)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialogserie, null)
+
+
+        val edpesodialog  = dialogView.findViewById<EditText>(R.id.edpesodialog)
+        val edrepsdialog = dialogView.findViewById<EditText>(R.id.edrepsdialog)
+        val btnsaveseriedialog = dialogView.findViewById<Button>(R.id.btnsaveseriedialog)
+
+
+        btnsaveseriedialog.setOnClickListener {
+            if (edpesodialog.text.toString().equals("")||edrepsdialog.text.toString().equals("")){
+                Toast.makeText(requireContext(), R.string.df_relleneCampos, Toast.LENGTH_SHORT).show()
+            }else{
+                var edpesodialog= edpesodialog.text.toString()
+                var edrepsdialog=edrepsdialog.text.toString()
+                var serie= Serie(edpesodialog, edrepsdialog)
+
+                agregarserie(ejercicio,serie)
+
+                dialog.dismiss()
+            }
+        }
+
+
+        builder.setView(dialogView)
+        dialog = builder.create()
+        dialog.show()
+
+
+    }
+
+    private fun eliminarSerie(serie: Serie,ejercicio: Ejercicio) {
+        val currentUser = auth.currentUser
+        currentUser?.let { user ->
+            val userEmail = user.email
+            userEmail?.let { email ->
+                val rutinasDb = db.collection("users").document(email)
+                rutinasDb.get().addOnSuccessListener { documentSnapshot ->
+                    val rutinas = documentSnapshot.data?.get("rutinas") as? MutableMap<String, Any>
+                    rutinas?.let {
+                        val ejercicios = rutinas[rutina.Nombre] as? MutableMap<String, Map<String, Any>>
+                        ejercicios?.let {
+                            // Encuentra el ejercicio en la lista de ejercicios
+                            val ejercicioActual = ejercicios[ejercicio.id] as? MutableMap<String,Any>
+                            ejercicioActual?.let {
+                                // Obtiene la lista de series del ejercicio
+                                val series = ejercicioActual["series"] as? MutableList<Map<String, Any>> ?: mutableListOf()
+                                // Encuentra la serie a eliminar
+                                val serieAEliminar = series.find {
+                                    it["peso"] == serie.peso && it["reps"] == serie.reps
+                                }
+                                // Elimina la serie si existe
+                                serieAEliminar?.let {
+                                    series.remove(it)
+                                }
+                                // Actualiza la lista de series del ejercicio en Firebase Firestore
+                                ejercicioActual["series"] = series
+                                // Actualiza la lista de ejercicios en la base de datos
+                                rutinasDb.update("rutinas", rutinas)
+                                    .addOnSuccessListener {
+                                        // Serie vacía agregada exitosamente
+                                        Log.d("Firestore", "Serie vacía agregada correctamente al ejercicio")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        // Manejar errores al agregar la serie vacía
+                                        Log.e("Firestore", "Error al agregar la serie vacía al ejercicio", e)
+                                    }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun agregarserie(ejercicio: Ejercicio,seriex: Serie) {
+        val currentUser = auth.currentUser
+        currentUser?.let { user ->
+            val userEmail = user.email
+            userEmail?.let { email ->
+                val rutinasDb = db.collection("users").document(email)
+                rutinasDb.get().addOnSuccessListener { documentSnapshot ->
+                    val rutinas = documentSnapshot.data?.get("rutinas") as? MutableMap<String, Any>
+                    rutinas?.let {
+                        val ejercicios = rutinas[rutina.Nombre] as? MutableMap<String, Map<String, Any>>
+                        ejercicios?.let {
+                            // Encuentra el ejercicio en la lista de ejercicios
+                            val ejercicioActual = ejercicios[ejercicio.id] as? MutableMap<String,Any>
+                            ejercicioActual?.let {
+                                // Obtiene la lista de series del ejercicio
+                                val series = ejercicioActual["series"] as? MutableList<Map<String, Any>> ?: mutableListOf()
+                                // Agrega una serie vacía a la lista
+                                val serie = hashMapOf(
+                                    "peso" to seriex.peso,
+                                    "reps" to seriex.reps
+                                )
+                                series.add(serie)
+                                // Actualiza la lista de series del ejercicio en Firebase Firestore
+                                ejercicioActual["series"] = series
+                                // Actualiza la lista de ejercicios en la base de datos
+                                rutinasDb.update("rutinas", rutinas)
+                                    .addOnSuccessListener {
+                                        // Serie vacía agregada exitosamente
+                                        Log.d("Firestore", "Serie vacía agregada correctamente al ejercicio")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        // Manejar errores al agregar la serie vacía
+                                        Log.e("Firestore", "Error al agregar la serie vacía al ejercicio", e)
+                                    }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

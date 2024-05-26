@@ -5,6 +5,6 @@
     <color name="rojo">#b7261e</color>
     <color name="green_light">#5AD85F</color>
     <color name="blue">#2A4BF8</color>
-    <color name="gris">#8F8E8E</color>
-    <color name="grisTrans">#818F8E8E</color>
+    <color name="gris">#9C9C9C</color>
+    <color name="grisTrans">#70BFBEBE</color>
 </resources>

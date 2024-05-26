@@ -6,8 +6,8 @@
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
     android:background="@drawable/botonesstyle"
-    android:maxHeight="300dp"
-    android:minHeight="150dp">
+    android:paddingBottom="8dp">
+
 
     <TextView
         android:id="@+id/tvnombreej"
@@ -20,6 +20,7 @@
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/rvseriesej"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/ivfotoej"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -60,8 +61,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvkgserie" />
@@ -76,4 +75,18 @@
         android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/tvkgserie"
         app:layout_constraintTop_toBottomOf="@+id/ivfotoej" />
+
+    <Button
+        android:id="@+id/btnagregarserie"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/iconmas"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.51"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rvseriesej" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

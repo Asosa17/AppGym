@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@android:color/transparent">
 
-    <EditText
+    <TextView
         android:id="@+id/edpesorowserie"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -23,11 +23,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
+    <TextView
         android:id="@+id/edrowserie"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="59dp"
+        android:layout_marginStart="70dp"
         android:layout_marginTop="16dp"
         android:inputType="number"
         android:maxLength="4"
@@ -36,5 +36,15 @@
         android:text="sd"
         android:textAlignment="center"
         app:layout_constraintStart_toEndOf="@+id/edpesorowserie"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnelimnarserie"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/iconmenos"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
