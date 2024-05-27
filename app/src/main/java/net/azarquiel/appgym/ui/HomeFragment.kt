@@ -154,7 +154,7 @@ class HomeFragment : Fragment(), OnChartValueSelectedListener {
                             // Mostrar los pesos del mes actual
                             val currentMonth = Calendar.getInstance().get(Calendar.MONTH)+1
                             val currentMonthWeights = getWeightsForMonth(currentMonth)
-                            currentMonthWeights.reverse()
+
                             adapter.setPesos(currentMonthWeights)
                             adapter.notifyDataSetChanged()
                         }

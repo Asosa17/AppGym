@@ -283,10 +283,8 @@ class ChatFragment : Fragment(), PostAdapter.OnClickListenerRecycler  {
         }
     }
 
-    fun refresh(posts:MutableList<Post>) {
-
-        adapter.setPosts(posts)
-        adapter.notifyDataSetChanged()
+    fun refresh(posts:MutableList<Post>,formatedDate: String) {
+        obtenerPost(formatedDate)
         binding.rvchat.smoothScrollToPosition(0)
     }
 

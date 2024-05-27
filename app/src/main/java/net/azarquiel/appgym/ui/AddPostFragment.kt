@@ -118,7 +118,7 @@ class AddPostFragment(val Chat:ChatFragment) : DialogFragment() {
                 GlobalScope.launch {
                     delay(1000)
                     withContext(Dispatchers.Main) {
-                        Chat.refresh(postschat)
+                        Chat.refresh(postschat,formattedDate2)
                         dismiss()
                     }
                 }
