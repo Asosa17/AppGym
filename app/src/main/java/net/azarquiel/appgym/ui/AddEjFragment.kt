@@ -59,7 +59,7 @@ class AddEjFragment(rutina: Rutina, ejerciciosFragment: EjerciciosFragment) : Di
         binding.rvaddejs.adapter=adapter
         binding.rvaddejs.layoutManager= LinearLayoutManager(requireContext())
         obtenerejs("ABDOMINALES")
-        binding.tvaddejs.text = "ABDOMINALES"
+        binding.tvaddejs.text = "-ABDOMINALES"
         obtenercats()
         val serachviewejs = binding.searchViewejs
         serachviewejs.setQueryHint("Search...")
@@ -112,7 +112,7 @@ class AddEjFragment(rutina: Rutina, ejerciciosFragment: EjerciciosFragment) : Di
         override fun OnClickAddEj(itemView:View){
             val dataItem = itemView.tag as Ejercicio
             añadirej(dataItem)
-            Toast.makeText(requireContext(),"Ejercicio añadido correctamente",Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(),R.string.rf_addejscorrect,Toast.LENGTH_SHORT).show()
         }
     }
 

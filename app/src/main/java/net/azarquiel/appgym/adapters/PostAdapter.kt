@@ -47,6 +47,8 @@ class PostAdapter (val context: Context,
 
             val tvpiepost = itemView.findViewById(R.id.tvpiepost) as TextView
             tvpiepost.setText(dataItem.PieComent)
+            val tvpostnombreuserrow = itemView.findViewById(R.id.tvpostnombreuserrow) as TextView
+            tvpostnombreuserrow.setText(dataItem.Usuario)
             val tvcountlikes = itemView.findViewById(R.id.tvcountlikes) as TextView
             tvcountlikes.setText(dataItem.Likes.count().toString())
             var tvcontcoments = itemView.findViewById(R.id.tvcontcoments) as TextView

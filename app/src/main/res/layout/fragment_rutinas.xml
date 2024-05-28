@@ -22,7 +22,7 @@
             android:layout_marginStart="40dp"
             android:layout_marginTop="40dp"
             android:layout_marginBottom="32dp"
-            android:text="Rutinas"
+            android:text="@string/rf_title"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"

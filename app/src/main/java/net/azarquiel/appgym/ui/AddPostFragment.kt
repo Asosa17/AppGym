@@ -69,6 +69,7 @@ class AddPostFragment(val Chat:ChatFragment) : DialogFragment() {
     private lateinit var post: Post
     private lateinit var formattedDate2: String
     private var email: String? = null
+    private var username: String? = null
     private lateinit var coment: String
     private  var foto:String = ""
     private lateinit var btnCamara: Button
@@ -98,12 +99,13 @@ class AddPostFragment(val Chat:ChatFragment) : DialogFragment() {
         val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         formattedDate = sdf.format(currentDate)
         email = datosUserSH.getString("email", "")
+        username = datosUserSH.getString("username", "")
 
         binding.btnpublicaraddpost.setOnClickListener {
             coment = binding.edappiecoment.text.toString()
             val sdf2 = SimpleDateFormat("ddMMyyyy", Locale.getDefault())
             formattedDate2 = sdf2.format(currentDate)
-            post = Post(foto, mutableListOf(), mutableListOf(), coment, email.toString(), formattedDate,"" )
+            post = Post(foto, mutableListOf(), mutableListOf(), coment, username.toString(), formattedDate,"" )
 
             newDocument["Likes"] = post.Likes
             newDocument["Comentarios"] = post.Comentarios

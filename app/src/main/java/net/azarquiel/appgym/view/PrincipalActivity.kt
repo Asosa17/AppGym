@@ -107,13 +107,13 @@ class PrincipalActivity : AppCompatActivity() {
         val tema = tema.toInt()
         when(tema){
             1-> {
-                setTheme(R.style.Base_Theme_TemaApp1)
+                setTheme(R.style.Base_Theme_TemaApp4)
             }
             2->{
-                setTheme(R.style.Theme_TemaApp2)
+                setTheme(R.style.Theme_TemaApp5)
             }
             3->{
-                setTheme(R.style.Theme_TemaApp3)
+                setTheme(R.style.Theme_TemaApp6)
             }
 
         }

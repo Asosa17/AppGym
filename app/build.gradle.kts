@@ -62,6 +62,6 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     implementation("org.quanqi:android-holo-graph:0.1.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-
+    implementation("androidx.core:core-splashscreen:1.0.0")
 
 }

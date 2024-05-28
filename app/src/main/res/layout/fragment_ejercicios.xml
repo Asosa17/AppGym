@@ -35,7 +35,7 @@
             android:layout_marginTop="40dp"
             android:layout_marginBottom="32dp"
             android:gravity="center_vertical"
-            android:text="Ejercicios"
+            android:text="@string/rf_ejs"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -8,6 +8,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.fragment.app.Fragment
 import com.google.firebase.Firebase
@@ -31,11 +32,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var datosUserSH: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         datosUserSH= getSharedPreferences("datosUserSh", MODE_PRIVATE)
         val idioma = datosUserSH.getString("idioma","en").toString()
         val tema = datosUserSH.getString("tema","1").toString()
@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         auth = Firebase.auth
         val currentUser = auth.currentUser
         userlocal=currentUser
+
         setInitialFragment()
     }
     private fun setInitialFragment() {

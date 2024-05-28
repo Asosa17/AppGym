@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AppGym</string>
+    <string name="app_name">SosaGym</string>
     //menu
     <string name="title_home">Home</string>
     <string name="title_rutinas">Routines</string>
@@ -55,7 +55,43 @@
     <string name="df_relleneCampos">Fill in the fields</string>
     <string name="df_comidaeliminada">Meal disposed correctly</string>
     <string name="df_comidaguardada">Meal stored correctly</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    //rutinasFragment
+    <string name="rf_title">Routines</string>
+    <string name="rf_addrutina">Add routine</string>
+    <string name="rf_nombrerutina">Routine name</string>
+    <string name="rf_crearrutina">Create</string>
+    <string name="rf_ejs">Exercises</string>
+    <string name="rf_addejs">Add exercises-</string>
+    <string name="rf_addejscorrect">Exercise added successfully</string>
+
+    //HomeFragment
+    <string name="hf_Hello">Hello</string>
+    <string name="hf_Subtitle">Lets train!</string>
+    <string name="hf_pormedio">Average weight per month</string>
+    <string name="hm_enero">January</string>
+    <string name="hm_febrero">February</string>
+    <string name="hm_marzo">March</string>
+    <string name="hm_abril">April</string>
+    <string name="hm_mayo">May</string>
+    <string name="hm_junio">June</string>
+    <string name="hm_julio">July</string>
+    <string name="hm_agosto">August</string>
+    <string name="hm_septiembre">September</string>
+    <string name="hm_oc">October</string>
+    <string name="hm_nov">November</string>
+    <string name="hm_dic">December</string>
+    <string name="hm_enero2">J</string>
+    <string name="hm_febrero2">F</string>
+    <string name="hm_marzo2">M</string>
+    <string name="hm_abril2">A</string>
+    <string name="hm_mayo2">M</string>
+    <string name="hm_junio2">J</string>
+    <string name="hm_julio2">J</string>
+    <string name="hm_agosto2">A</string>
+    <string name="hm_septiembre2">S</string>
+    <string name="hm_oc2">O</string>
+    <string name="hm_nov2">N</string>
+    <string name="hm_dic2">D</string>
 
 
 </resources>

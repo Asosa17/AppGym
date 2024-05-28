@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AppGym</string>
+    <string name="app_name">SosaGym</string>
     //menu
     <string name="title_home">Début</string>
     <string name="title_rutinas">Routines</string>
@@ -54,5 +54,42 @@
     <string name="df_toastSinRegistros">"  Il n'y a aucun enregistrement pour cette journée"</string>
     <string name="df_relleneCampos">Remplissez les champs</string>
     <string name="df_comidaeliminada">Repas disposé correctement</string>
-    <string name="df_comidaguardada">Repas stockés correctement</string>
+    <string name="df_comidaguardada">Repas stored correctly</string>
+    //rutinasFragment
+    <string name="rf_title">Routines</string>
+    <string name="rf_addrutina">Ajouter une routine</string>
+    <string name="rf_nombrerutina">Nom de la routine</string>
+    <string name="rf_crearrutina">Créer</string>
+    <string name="rf_ejs">Exercices</string>
+    <string name="rf_addejs">Ajouter des exercices</string>
+    <string name="rf_addejscorrect">Exercice ajouté avec succès</string>
+
+    //HomeFragment
+    <string name="hf_Hello">Bonjour</string>
+    <string name="hf_Subtitle">Allons nous entraîner!</string>
+    <string name="hf_pormedio">Poids moyen par mois</string>
+    <string name="hm_enero">Janvier</string>
+    <string name="hm_febrero">Février</string>
+    <string name="hm_marzo">Mars</string>
+    <string name="hm_abril">Avril</string>
+    <string name="hm_mayo">Mai</string>
+    <string name="hm_junio">Juin</string>
+    <string name="hm_julio">Juillet</string>
+    <string name="hm_agosto">Août</string>
+    <string name="hm_septiembre">Septembre</string>
+    <string name="hm_oc">Octobre</string>
+    <string name="hm_nov">Novembre</string>
+    <string name="hm_dic">Décembre</string>
+    <string name="hm_enero2">J</string>
+    <string name="hm_febrero2">F</string>
+    <string name="hm_marzo2">M</string>
+    <string name="hm_abril2">A</string>
+    <string name="hm_mayo2">M</string>
+    <string name="hm_junio2">J</string>
+    <string name="hm_julio2">J</string>
+    <string name="hm_agosto2">A</string>
+    <string name="hm_septiembre2">S</string>
+    <string name="hm_oc2">O</string>
+    <string name="hm_nov2">N</string>
+    <string name="hm_dic2">D</string>
 </resources>

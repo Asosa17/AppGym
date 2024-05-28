@@ -19,6 +19,8 @@
         android:padding="3dp"
         android:text="sdf"
         android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -35,6 +37,8 @@
         android:padding="3dp"
         android:text="sd"
         android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@+id/edpesorowserie"
         app:layout_constraintTop_toTopOf="parent" />
 
