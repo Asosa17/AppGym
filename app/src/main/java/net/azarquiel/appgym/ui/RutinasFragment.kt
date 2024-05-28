@@ -85,7 +85,7 @@ class RutinasFragment : Fragment() {
                 val rutinasdb = db.collection("users").document(email)
                 rutinasdb.get()
                     .addOnSuccessListener { document ->
-                        val rutinas = document.data?.get("rutinas") as MutableMap<String,Any>
+                        val rutinas = document.data?.get("rutinas") as? MutableMap<String,Any>?: mutableMapOf()
                         rutinas?.let {
                             // Remover la rutina con el nombre especificado
                             rutinas.remove(nombre)

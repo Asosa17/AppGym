@@ -176,13 +176,13 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
                 userDocument.get()
                     .addOnSuccessListener { document ->
                         if (document != null) {
-                            val comidasMapa = document.data?.get("comidas") as Map<String, Any>?
+                            val comidasMapa = document.data?.get("comidas") as? Map<String, Any> ?: mutableMapOf()
                             if (comidasMapa != null) {
-                                val comidasFecha = comidasMapa[fechaFormateada] as Map<String, Any>?
+                                val comidasFecha = comidasMapa[fechaFormateada] as? Map<String, Any> ?: mutableMapOf()
                                 if (comidasFecha!=null){
                                     cb=true
                                     comidasFecha.forEach { (_, datosComida) ->
-                                        val comida = datosComida as Map<String, Any>
+                                        val comida = datosComida as? Map<String, Any> ?: mutableMapOf()
                                         val nombreComida = comida["NombreComida"] as String
                                         val cantidad = comida["Cantidad"] as String
                                         val kcal100 = comida["Kcal100"] as String
@@ -329,7 +329,7 @@ class DietasFragment : Fragment(), ComidaAdapter.OnClickListenerRecycler {
                 userDocument.get()
                     .addOnSuccessListener { document ->
                         if (document != null) {
-                            val comidasMapa = document.data?.get("comidas") as? MutableMap<String, Any>?: HashMap()
+                            val comidasMapa = document.data?.get("comidas") as? MutableMap<String, Any> ?: mutableMapOf()
                             if (comidasMapa != null) {
                                 // Obtener el mapa de comidas para la fecha actual o crear uno nuevo si no existe
                                 val comidasFecha = comidasMapa.getOrPut(fechaFormateada) { mutableMapOf<String, Any>() } as MutableMap<String, Any>

@@ -251,9 +251,10 @@
                     android:layout_marginBottom="16dp"
                     android:src="@drawable/iconengland"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/ivfran"
-                    app:layout_constraintStart_toEndOf="@+id/ivesp"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
 
                 <ImageView
                     android:id="@+id/ivesp"
@@ -261,10 +262,12 @@
                     android:layout_height="50dp"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="16dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginBottom="16dp"
                     android:padding="3dp"
                     android:src="@drawable/iconspain"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/iving"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -272,12 +275,14 @@
                     android:id="@+id/ivfran"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="32dp"
                     android:layout_marginBottom="18dp"
                     android:src="@drawable/iconfrancia"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/iving"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -345,9 +350,11 @@
                     android:layout_height="50dp"
                     android:layout_marginStart="48dp"
                     android:layout_marginTop="16dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginBottom="16dp"
                     android:src="@drawable/circulorojo"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/ivtemaaazul"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -355,15 +362,12 @@
                     android:id="@+id/ivtemaaazul"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_marginStart="20dp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="20dp"
                     android:layout_marginBottom="16dp"
                     android:src="@drawable/circuloazul"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/ivtemaverde"
-                    app:layout_constraintHorizontal_bias="0.4"
-                    app:layout_constraintStart_toEndOf="@+id/ivtemarojo"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="1.0" />
 
@@ -371,12 +375,14 @@
                     android:id="@+id/ivtemaverde"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
+                    android:layout_marginStart="8dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="48dp"
                     android:layout_marginBottom="16dp"
                     android:src="@drawable/circuloverde"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/ivtemaaazul"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="1.0" />
             </androidx.constraintlayout.widget.ConstraintLayout>

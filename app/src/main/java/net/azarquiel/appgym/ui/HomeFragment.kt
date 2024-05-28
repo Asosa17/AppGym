@@ -47,6 +47,7 @@ import java.util.Locale
 
 class HomeFragment : Fragment(), OnChartValueSelectedListener {
 
+
     private lateinit var messelec: TextView
     private lateinit var lineChart: LineChart
     private lateinit var binding: FragmentHomeBinding
@@ -72,14 +73,18 @@ class HomeFragment : Fragment(), OnChartValueSelectedListener {
         datosUserSH = requireActivity().getSharedPreferences("datosUserSh", Context.MODE_PRIVATE)
         val imageUrl = datosUserSH.getString("imageUrl", null)
         val username = datosUserSH.getString("username",null)
-        Picasso.get().load(imageUrl).into(binding.ivhomeuser)
+        if (!imageUrl.equals("null")){
+            Picasso.get().load(imageUrl).into(binding.ivhomeuser)
+        }else{
+            binding.ivhomeuser.setImageResource(R.drawable.noimage)
+        }
         binding.tvhomeuser.setText(getString(R.string.hf_Hello)+" ${username}")
         messelec=binding.tvmesselecc
         lineChart = binding.barChart
         initRV()
+        lineChart.setOnChartValueSelectedListener(this)
         obtenePesos()
 
-        lineChart.setOnChartValueSelectedListener(this)
 
     }
 
@@ -103,18 +108,18 @@ class HomeFragment : Fragment(), OnChartValueSelectedListener {
 
     private fun obtenernombre(month: Int): CharSequence? {
         return when (month) {
-            1 -> getString(R.string.hm_enero)
-            2 -> getString(R.string.hm_febrero)
-            3 -> getString(R.string.hm_marzo)
-            4 -> getString(R.string.hm_abril)
-            5 -> getString(R.string.hm_mayo)
-            6 -> getString(R.string.hm_junio)
-            7 -> getString(R.string.hm_julio)
-            8 -> getString(R.string.hm_agosto)
-            9 -> getString(R.string.hm_septiembre)
-            10 -> getString(R.string.hm_oc)
-            11 -> getString(R.string.hm_nov)
-            12 -> getString(R.string.hm_dic)
+            1 -> "Enero"
+            2 -> "Febrero"
+            3 -> "Marzo"
+            4 -> "Abril"
+            5 -> "Mayo"
+            6 -> "Junio"
+            7 -> "Julio"
+            8 -> "Agosto"
+            9 -> "Septiembre"
+            10 -> "Octubre"
+            11 -> "Noviembre"
+            12 -> "Diciembre"
             else -> ""
         }
     }
@@ -142,7 +147,7 @@ class HomeFragment : Fragment(), OnChartValueSelectedListener {
                         return@addSnapshotListener
                     }
                     if (snapshot != null && snapshot.exists()) {
-                        val weightsMap = snapshot.data?.get("peso") as Map<String, String>
+                        val weightsMap = snapshot.data?.get("peso") as? Map<String, String>?: mutableMapOf()
                         weightsByMonth.clear()
                         weightsMap.forEach { (fecha, pesoStr) ->
                             weightsByMonth.add(Peso(fecha, pesoStr))
@@ -228,10 +233,12 @@ class HomeFragment : Fragment(), OnChartValueSelectedListener {
         xAxis.valueFormatter = IndexAxisValueFormatter(
             listOf(
                 "",
-                getString(R.string.hm_enero2), getString(R.string.hm_febrero2), getString(R.string.hm_marzo2),
-                getString(R.string.hm_abril2), getString(R.string.hm_mayo2), getString(R.string.hm_junio2),
-                getString(R.string.hm_julio2), getString(R.string.hm_agosto2), getString(R.string.hm_septiembre2),
-                getString(R.string.hm_oc2), getString(R.string.hm_nov2), getString(R.string.hm_dic2), ""
+                "E", "F",
+                "M", "A",
+                "M", "J",
+                "J", "A",
+                "S", "O",
+                "N", "D"
             )
         )
 

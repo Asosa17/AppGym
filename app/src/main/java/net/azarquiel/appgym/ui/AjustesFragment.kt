@@ -158,7 +158,7 @@ class AjustesFragment : Fragment() {
                         val altura = document.getString("altura") ?: ""
                         tvAlturauser.text = Editable.Factory.getInstance().newEditable(altura)
                         // Obtener el mapa de pesos del documento si existe
-                        val pesoMap = document["peso"] as? Map<String, Any>
+                        val pesoMap = document["peso"] as? Map<String, Any> ?: mutableMapOf()
                         if (pesoMap != null) {
                             val keys = pesoMap.keys.sortedDescending()
                             val lastKey = keys.firstOrNull()
