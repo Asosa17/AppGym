@@ -54,6 +54,7 @@
             android:background="@drawable/botonesstyle"
             android:backgroundTint="?attr/colorPrimary"
             android:text="@string/df_btnAñaComida"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

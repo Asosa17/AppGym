@@ -49,6 +49,7 @@
             android:hint="@string/lg_phpass"
             android:inputType="textPassword"
             android:padding="10dp"
+            android:textColor="#000000"
             app:layout_constraintBottom_toTopOf="@+id/btnIniSesion"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -82,6 +83,7 @@
             android:hint="email@example.com"
             android:inputType="textEmailAddress"
             android:padding="10dp"
+            android:textColor="#000000"
             app:layout_constraintBottom_toTopOf="@+id/textView7"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
