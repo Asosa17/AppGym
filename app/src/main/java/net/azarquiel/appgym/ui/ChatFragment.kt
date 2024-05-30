@@ -131,7 +131,7 @@ class ChatFragment : Fragment(), PostAdapter.OnClickListenerRecycler  {
                     val postTotalesdb=db.collection("postsTotales").document(post.id)
                     postTotalesdb.get()
                         .addOnSuccessListener { document ->
-                            val likes = document["Likes"] as  List<String>
+                            val likes = document["Likes"] as?  List<String> ?: mutableListOf()
                             likes?.let {
                                 if (it.contains(email)) {
                                     val updatedLikes = it.toMutableList()
